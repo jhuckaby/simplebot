@@ -225,6 +225,9 @@ sub connected {
 	};
 	if ($@) { $self->log_debug(1, "CRASH connected: $@"); $self->shutdown( $self->quit_message() ); }
 	
+	# reschedule tick for 1 second, not 5
+	$self->schedule_tick(1);
+	
 	$self->invoke_all_plugins('connected');
 	return undef;
 }
@@ -521,10 +524,76 @@ sub tick {
 				unlink $file;
 			} # foreach queue file
 		} # mod date changed
+		
+		# also check for daily maint here
+		my $day_code = yyyy_mm_dd();
+		if (!$self->{_eb_data}->{LastMaint} || ($day_code ne $self->{_eb_data}->{LastMaint})) {
+			$self->run_daily_maintenance();
+			
+			$self->{_eb_data}->{LastMaint} = $day_code;
+			$self->dirty(1);
+		}
 	} # check time
 	
 	$self->invoke_all_plugins('tick');
 	return $self->{params}->{tick_freq} || 0.1;
+}
+
+sub run_daily_maintenance {
+	# rotate logs, etc.
+	# runs once a day at midnight
+	my $self = shift;
+	my $now = time();
+	
+	$self->log_debug(2, "Starting daily maintenance run");
+	
+	# allow all plugins to do maintenance
+	$self->invoke_all_plugins('maint');
+	
+	# rotate logs into daily gzip archives
+	$self->log_debug(3, "Rotating logs");
+	$self->rotate_logs();
+	
+	$self->log_debug(2, "Daily maintenance complete");
+}
+
+sub rotate_logs {
+	# rotate and archive daily logs
+	my $self = shift;
+	my $yyyy_mm_dd = yyyy_mm_dd( normalize_midnight( normalize_midnight(time()) - 43200 ), '/' );
+	my $archive_dir = 'logs/archive';
+	my $logs = [ glob('logs/*.log') ];
+	my $gzip_bin = find_bin('gzip');
+	
+	foreach my $log_file (@$logs) {
+		my $log_category = basename($log_file); $log_category =~ s/\.\w+$//;
+		my $log_archive = $archive_dir . '/' . $log_category . '/' . $yyyy_mm_dd . '.log';
+		
+		$self->log_debug(3, "Maint: Archiving log: $log_file to $log_archive.gz");
+		
+		# add a message at the bottom of the log, in case someone is live tailing it.
+		my $fh = FileHandle->new( ">>$log_file" );
+		if ($fh) {
+			my $nice_time = scalar localtime;
+			$fh->print("\n# Rotating log to $log_archive.gz at $nice_time\n");
+		}
+		$fh->close();
+		
+		if (make_dirs_for( $log_archive )) {
+			if (rename($log_file, $log_archive)) {
+				my $output = `$gzip_bin $log_archive 2>&1`;
+				if ($output =~ /\S/) {
+					$self->log_debug(1, "Maint Error: Failed to gzip file: $log_archive: $output");
+				}
+			}
+			else {
+				$self->log_debug(1, "Maint Error: Failed to move file: $log_file --> $log_archive: $!");
+			}
+		}
+		else {
+			$self->log_debug(1, "Maint Error: Failed to create directories for: $log_archive: $!");
+		}
+	} # foreach log
 }
 
 sub help {

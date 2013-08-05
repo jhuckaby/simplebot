@@ -68,7 +68,7 @@ BEGIN
     use vars qw(@ISA @EXPORT @EXPORT_OK);
 
     @ISA		= qw(Exporter);
-    @EXPORT		= qw(XMLalwaysarray load_file save_file save_file_atomic get_hostname get_bytes_from_text get_text_from_bytes short_float commify pct pluralize alphanum ascii_table file_copy file_move generate_unique_id memory_substitute memory_lookup find_files ipv4_to_hostname hostname_to_ipv4 wget xml_to_javascript escape_js normalize_midnight yyyy_mm_dd mm_dd_yyyy yyyy get_nice_date follow_symlinks get_remote_ip get_user_agent strip_high merge_hashes xml_post parse_query compose_query parse_xml compose_xml decode_entities encode_entities encode_attrib_entities xpath_lookup db_query parse_cookies touch probably rand_array find_elem_idx dumper serialize_object deep_copy trim file_get_contents file_put_contents preg_match preg_replace make_dirs_for get_text_from_seconds get_seconds_from_text json_parse json_compose json_compose_pretty normalize_channel nch strip_channel sch find_timezone_name normalize_space);
+    @EXPORT		= qw(XMLalwaysarray load_file save_file save_file_atomic get_hostname get_bytes_from_text get_text_from_bytes short_float commify pct pluralize alphanum ascii_table file_copy file_move generate_unique_id memory_substitute memory_lookup find_files ipv4_to_hostname hostname_to_ipv4 wget xml_to_javascript escape_js normalize_midnight yyyy_mm_dd mm_dd_yyyy yyyy get_nice_date follow_symlinks get_remote_ip get_user_agent strip_high merge_hashes xml_post parse_query compose_query parse_xml compose_xml decode_entities encode_entities encode_attrib_entities xpath_lookup db_query parse_cookies touch probably rand_array find_elem_idx dumper serialize_object deep_copy trim file_get_contents file_put_contents preg_match preg_replace make_dirs_for get_text_from_seconds get_seconds_from_text json_parse json_compose json_compose_pretty normalize_channel nch strip_channel sch find_timezone_name normalize_space find_bin);
 	@EXPORT_OK	= qw();
 }
 
@@ -84,6 +84,20 @@ my $entities = {
 	'apos' => "'",
 	'quot' => '"'
 };
+
+my $standard_binary_paths = {
+	'/bin' => 1,
+	'/usr/bin' => 1,
+	'/usr/local/bin' => 1,
+	'/sbin' => 1,
+	'/usr/sbin' => 1,
+	'/usr/local/sbin' => 1,
+	'/opt/bin' => 1,
+	'/opt/local/bin' => 1
+};
+foreach my $temp_bin_path (split(/\:/, $ENV{'PATH'} || '')) {
+	if ($temp_bin_path) { $standard_binary_paths->{$temp_bin_path} = 1; }
+}
 
 sub XMLalwaysarray {
 	my $args={@_};
@@ -1399,6 +1413,21 @@ sub normalize_space {
 	my $text = shift;
 	$text =~ s/\s+/ /g;
 	return trim($text);
+}
+
+sub find_bin {
+	# locate binary executable on filesystem
+	# look in the usual places, also PATH
+	my $bin_name = shift;
+	
+	foreach my $parent_path (keys %$standard_binary_paths) {
+		my $bin_path = $parent_path . '/' . $bin_name;
+		if ((-e $bin_path) && (-x $bin_path)) {
+			return $bin_path;
+		}
+	}
+	
+	return '';
 }
 
 1;
