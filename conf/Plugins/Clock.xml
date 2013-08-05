@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Version>1.0</Version>
+	
+	<Access>
+		<Default>voice</Default>
+		<alarm>op</alarm>
+		<countdown>op</countdown>
+		<timer>op</timer>
+	</Access>
+	
+	<Help>
+		<Brief>
+TIME - Emits the current date/time in the user's local timezone (if known).
+ALARM - Sets single or repeating alarms which alert the user at the proper date/time.
+COUNTDOWN - Countdown to a particular time, date or next calendar event.
+TIMER - Simple countdown timer given minutes and seconds.
+		</Brief>
+		<Detail>
+			<clock>
+TIME
+TIME timezone
+-
+This command prints the current bot server date and time, in the local timezone of the user, if known (i.e. see !help location).  Examples:
+-
+!time
+!time Eastern
+!time GMT
+			</clock>
+			<alarm>
+ALARM SET date/time
+ALARM SET date/time description
+ALARM LIST
+ALARM DELETE index
+-
+Use ALARM SET to set an alarm for any future date/time.  The bot should figure out your formatting.  Something as simple as "!alarm set 8:30" would work, as well as "!alarm set sunday january 25 6pm repeat call nancy".  Include the word "repeat" for a repeating alarm (otherwise it is one time only), and an optional description.
+Enter "!alarm list" to list all the current alarms, and "!alarm delete 1" to delete the first one in the list.  The alarm will sound in the channel in which it was set.
+Examples:
+-
+!alarm set 9:45
+!alarm set 4:30 pm Walk the Dog
+!alarm set saturday 11 am repeat Watch Podcast
+			</alarm>
+			<countdown>
+COUNTDOWN TO time
+COUNTDOWN TO date/time description
+COUNTDOWN TO CALENDAR
+COUNTDOWN STOP
+-
+This command sets a countdown to a specific point in time.  Specify the destination date and/or time, or use the keyword "calendar" to count down to the next event on a Google Calendar attached to the channel.  Examples: "!countdown to 7:30", and "!countdown to calendar".  The bot emits progress reports in ever-increasing frequency as the target time approaches.  Use "!countdown stop" to cancel an active timer.  Only one timer may be active per channel.  Examples:
+-
+!countdown to 9:30
+!countdown to midnight
+!countdown to sunday 4:30 pm
+!countdown to calendar
+			</countdown>
+			<timer>
+TIMER MM::SS
+TIMER HH::MM::SS
+TIMER STOP
+-
+This command sets a countdown timer, given a duration specified in MM::SS, HH::MM::SS or human time, such as "5 minutes".  The bot emits progress reports in ever-increasing frequency as the target time approaches.  Use "!timer stop" to cancel an active timer.  Only one timer may be active per channel.  Examples:
+-
+!timer 5:00
+!timer 1:00:00
+!timer 45 minutes
+!timer 12 hours
+			</timer>
+		</Detail>
+	</Help>
+</PluginConfig>

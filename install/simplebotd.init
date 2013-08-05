@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# init.d script for SimpleBot Daemon
+#
+# chkconfig: 345 81 20
+# description: SimpleBot Daemon
+
+### BEGIN INIT INFO
+# Provides:          simplebotd
+# Required-Start:    $local_fs $remote_fs $network $syslog $named
+# Required-Stop:     $local_fs $remote_fs $network $syslog $named
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# X-Interactive:     true
+# Short-Description: Start/stop simplebot server
+### END INIT INFO
+
+/opt/simplebot/bin/simplebotctl.sh $1

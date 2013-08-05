@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Version>1.0</Version>
+	
+	<Access>
+		<Default>0</Default>
+		<poll>op</poll>
+		<vote>0</vote>
+	</Access>
+	
+	<Help>
+		<Brief>
+POLL - Manage polls (open, close, results).
+VOTE - Cast your vote for an open poll.
+		</Brief>
+		<Detail>
+			<poll>
+POLL open (my title)
+POLL status
+POLL close
+POLL results
+POLL history
+-
+This command manages polls.  Use the "!poll open ..." command to start a new poll, but specify the poll title after the command, e.g. "!poll open What's your favorite food?".  Type "!poll close" to close the poll, and "!poll results" to get the voting results.  To see historical polls, use "!poll history".  Examples:
+-
+!poll open What's your favorite OS?
+!poll close
+!poll results
+			</poll>
+			<vote>
+VOTE (your vote)
+-
+This command casts your vote in the current open poll.  Just enter the desired value after the command, e.g. "!vote pizza".  Votes are matched case-insensitively against previous votes.  So if someone votes for "pizza" and someone else votes for "PIZZA", they are treated as the same value.
+			</vote>
+		</Detail>
+	</Help>
+</PluginConfig>

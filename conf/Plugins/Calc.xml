@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Version>1.0</Version>
+	
+	<Access>
+		<Default>voice</Default>
+	</Access>
+	
+	<Help>
+		<Brief>
+CALC - Performs simple math calculations.
+CONVERT - Converts values between many known units (i.e. temp, weight, volume).
+		</Brief>
+		<Detail>
+			<calc>
+CALC expression
+This command performs simple math calculations, and posts the answer to the channel (or user if in a private message).  Examples:
+-
+!calc 45 + 5
+!calc (374634 * 34) / 500.1
+!calc 2 ** 8
+			</calc>
+			<convert>
+CONVERT value units to units
+-
+This command converts numerical values between various units, such as temperature, weight and volume.  It posts the answer to the channel (or user if in a private message).  For example, you could type "!convert 45 lbs to kg" to convert pounds to kilograms, which would output 20.41165665 kg.  Examples:
+-
+!convert 100 lbs to kg
+!convert 25 C to F
+!convert 5 mm to in
+!convert 1 gallon to cm^3
+!convert 4500 rpm to hz
+			</convert>
+		</Detail>
+	</Help>
+</PluginConfig>

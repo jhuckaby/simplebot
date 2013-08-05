@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Version>1.0</Version>
+	
+	<CheckFreq>3600</CheckFreq>
+	
+	<Access>
+		<Default>op</Default>
+	</Access>
+	
+	<Help>
+		<Brief>
+CALENDAR - Attach a Google Calendar to the current channel, and show the current / next event.
+CURRENT - Show the current event from the channel's calendar, if any.
+NEXT - Show the next event on the channel's calendar and when it starts.
+		</Brief>
+		<Detail>
+			<calendar>
+CALENDAR SET your-google-cal-id
+CALENDAR REFRESH
+CALENDAR CURRENT
+CALENDAR NEXT
+CALENDAR DELETE
+-
+These commands allow you to attach a Google Calendar to the current #channel, so you can emit the current and next events anytime you want.  To find your Calendar ID, open your calendar in Google, make sure it is public, edit settings, then grab the ID in the "Calendar Address" section which should look like this: "(Calendar ID: iu9de9ell3bhagnk1con4052q0@group.calendar.google.com)".
+The CALENDAR command can be abbreviated to just "CAL" if you want, i.e. "!cal refresh".
+			</calendar>
+			<current>
+CURRENT
+This emits the current calendar event to the channel, including its title and the time it started (uses timezone from calendar).
+			</current>
+			<next>
+NEXT
+This emits the next upcoming calendar event to the channel, including its title and starting time (uses timezone from calendar).  Will also include the starting date if it is after today.
+			</next>
+		</Detail>
+	</Help>
+</PluginConfig>

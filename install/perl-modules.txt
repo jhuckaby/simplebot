@@ -1,0 +1,12 @@
+POE
+Bot::BasicBot
+JSON::XS
+LWP::UserAgent
+URI::Escape
+HTTP::Date
+DateTime
+DateTime::TimeZone
+DateTime::TimeZone::Alias
+Net::Twitter::Lite
+Net::Ping::External
+Math::Units

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Version>1.0</Version>
+	
+	<Access>
+		<Default>op</Default>
+	</Access>
+	
+	<Help>
+		<Brief>
+TOPIC - Set the channel topic in special named columns, separated by a divider.
+		</Brief>
+		<Detail>
+			<topic>
+TOPIC - Set the channel topic column.
+TOWNER - Set the channel topic "owner" column (your name).
+TVERB - Set the channel topic "verb" column (i.e. "is").
+TSTATUS - Set the channel topic "status" column (i.e. "Away").
+TSTATIC - Set the channel topic "static" column (i.e. your website URL).
+TDIVIDER - Set the divider string which separates the topic columns, defaults to a pipe (|).
+TREFRESH - Refresh the channel topic, in case some Op changed it manually.
+TRESET - Reset (clear) the topic to a blank string.
+TON - Shortcut for !tstatus Online
+TOFF - Shortcut for !tstatus Offline
+-
+These commands control the channel topic using a set of named "columns" and a divider.  It is based on an original design by TMFKsoft and also used in the popular Techie-Bot.  It produces topics like the following: "Minecraft Chat | Eric is Online | http://mysever.com".  That is made of up 5 different columns, a topic (Minecraft Chat), an owner (Eric), a verb (is), a status (Online), and a static string (http://myserver.com).  You can set each column separately without affecting the others:
+-
+!topic Minecraft Chat
+!towner Eric
+!tverb is
+!tstatus Away
+!tstatic http://mywebsite.com
+			</topic>
+		</Detail>
+	</Help>
+</PluginConfig>

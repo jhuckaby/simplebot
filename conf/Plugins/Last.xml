@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Version>1.0</Version>
+	
+	<Access>
+		<Default>voice</Default>
+	</Access>
+	
+	<Help>
+		<Brief>
+LAST - Report when a user was last seen in a channel.
+		</Brief>
+		<Detail>
+			<last>
+LAST nickname
+This reports when the user was last seen in the channel, and what he/she last said.
+			</last>
+		</Detail>
+	</Help>
+</PluginConfig>

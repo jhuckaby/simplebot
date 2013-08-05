@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Version>1.0</Version>
+	
+	<Access>
+		<Default>op</Default>
+	</Access>
+	
+	<Help>
+		<Brief>
+PING - Pings a hostname to see if it responds, and reports the round trip time in milliseconds.
+HOST - Attempts to resolve a hostname to IP, or IP to hostname, using DNS.
+HEAD - Analyzes a given URL, and reports back its HTTP response headers (byte size, web server, etc.).
+TCP - Attempt a TCP socket connection on a given hostname/IP and port number.
+		</Brief>
+		<Detail>
+			<ping>
+PING hostname
+This command pings a given hostname or IP address, and reports the round trip packet time.
+			</ping>
+			<host>
+HOST hostname
+-
+This command attempts to resolve a given hostname to IP address, or IP to hostname, using local DNS.
+Command alias: !dns
+			</host>
+			<head>
+HEAD url
+-
+This command analyzes a given URL, and reports back its size, web server software, and any other information it has.
+Command aliases: !whead, !http, !sniff, !url
+			</head>
+			<tcp>
+TCP hostname port
+-
+This command attempts a TCP socket connection on the given hostname/IP and port.  It returns if the operation was successful or not.
+Command aliases: !connect, !telnet
+			</tcp>
+		</Detail>
+	</Help>
+</PluginConfig>

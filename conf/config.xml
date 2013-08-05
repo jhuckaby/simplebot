@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<BotConfig>
+	<data_commit_freq>60</data_commit_freq>
+	<debug_level>9</debug_level>
+	<email>simplebot@effectsoftware.com</email>
+	<flood>1</flood>
+	<name>SimpleBot</name>
+	<nick>simplebot</nick>
+	<password></password>
+	<port>6668</port>
+	<server>127.0.0.1</server>
+	<ssl>0</ssl>
+	<username>simplebot</username>
+	<secret_key>12345</secret_key>
+</BotConfig>

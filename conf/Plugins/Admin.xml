@@ -1,0 +1,143 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Version>1.0</Version>
+	
+	<Access>
+		<Default>owner</Default>
+		<join>0</join>
+	</Access>
+	
+	<Help>
+		<Brief>
+REGISTER - Attempt to register the bot nickname with NickServ.
+IDENTIFY - Attempt to identify with NickServ (happens automatically on connect).
+NICK - Change the bot's nickname permanently.
+MSG - Send a custom private message to any user (i.e. NickServ, ChanServ, etc.)
+ACCESS - Change user access levels for commands (set, get, list)
+OWNER - Change bot ownership (add, remove, list)
+ACTIVATOR - Change bot activator symbols (add, remove, list)
+SAY - Have the bot say something (puppet mode)
+EMOTE - Have the bot emote something.
+EVAL - Eval raw Perl code (for debugging only)
+EXEC - Execute raw shell command (for debugging only)
+JOIN - Have the bot join a channel (remembers, autojoins)
+LEAVE - Have the bot leave a channel (removes autojoin)
+CONFIG - Set or get configuration values.
+SAVE - Immediately save bot data to disk
+QUIT - Make the bot disconnect and shut down.
+RESTART - Make the bot restart itself.
+VERSION - Report current and latest available version of SimpleBot.
+UPGRADE - Upgrade SimpleBot to the latest version.
+		</Brief>
+		<Detail>
+			<register>
+REGISTER
+REGISTER password email
+REGISTER any params needed
+-
+This command makes the bot attempt to register its nickname with NickServ.  The standard "/msg NickServ PASSWORD EMAIL" command is sent, using the password and email in the bot's config file, unless otherwise specified on the command itself.  If you like you can format your own REGISTER command, as required by the IRC server.  Bot owners only.
+			</register>
+			<identify>
+IDENTIFY
+IDENTIFY password
+-
+This command makes the bot attempt to identify with NickServ.  This happens automatically upon connect, as long as a password is specified in the bot's config file.  The standard '/msg NickServ IDENTIFY PASSWORD" command is sent, unless otherwise specified on the command itself (i.e. you can enter a different password, or different arguments altogether, if the IRC server requires it).  Whatever you enter is then remembered for future connections on the same server.
+			</identify>
+			<nick>
+NICK newnick
+This command changes the bot's nickname.  The new name is saved to disk, so the bot will always remember its current value, even after a restart.
+			</nick>
+			<msg>
+MSG who message
+Send a custom private message to any user.  This can be used to construct custom commands for NickServ or ChanServ.  For example: !msg NickServ REGISTER mypassword myemail.  However, see REGISTER command.
+			</msg>
+			<access>
+ACCESS set command level
+ACCESS get command
+ACCESS list
+-
+This allows you to manipulate the minimum user access levels per each bot command.  For example, 'access set emote op' would only allow operators (and up) to access the 'emote' command.  Use 'access get emote' to determine the current access level for a command, or 'access list' to list levels for all commands.  Examples:
+-
+!access set join owner
+!access get twitter
+!access list
+			</access>
+			<owner>
+OWNER add username
+OWNER remove username
+OWNER list
+-
+This allows you to manipulate the list of bot "owners", which are users who always have full control over the bot and can execute every command, regardless of access level.  Note that a user must have at least Half-Op (+h) permissions to become a bot owner.  This is a protection system to prevent users from changing their nick to a known bot owner who is offline, and then trying to access the bot before the nick identify timeout occurs.
+			</owner>
+			<activator>
+ACTIVATOR add symbol
+ACTIVATOR remove symbol
+ACTIVATOR list
+-
+This allows you to manipulate the activation symbols that the bot recognizes.  By default the bot listens to tilde ('~') and exclamation ('!') prefixed commands, but you may remove these and add others.  Any non-alphanumeric symbol is acceptable.  Example: activator add ^
+			</activator>
+			<say>
+SAY text
+SAY #channel text
+-
+Have the bot say something.  Include #channel to specify a channel, so for example you can tell the bot what to say in a private chat, and he'll emit the text on a specific channel.  Omit #channel and he'll just say it in the same context you spoke to him.
+			</say>
+			<emote>
+EMOTE text
+EMOTE #channel text
+-
+Same as "say", but causes the bot to emote instead.
+			</emote>
+			<eval>
+EVAL code
+This will evaluate (run) raw Perl code.  Use with extreme caution.  Bot owners only.
+			</eval>
+			<exec>
+EXEC command
+This will execute the provided text as a shell command on the server.  Use with extreme caution.  Bot owners only.
+			</exec>
+			<join>
+JOIN #channel
+This will cause the bot to join the channel specified by #channel. Also, he will remember this and auto-join the channel whenever he connects.
+			</join>
+			<leave>
+LEAVE
+LEAVE #channel
+This will cause the bot to leave a channel.  You can specify the channel by name, or omit it to have the bot leave the current channel.
+			</leave>
+			<config>
+CONFIG SET path value
+CONFIG GET path
+-
+This command lets you get or set configuration values, without having to directly edit the config files on the server.  The values are saved in the bot database, and overide the config file values when the bot starts up.  You do have to know the "path" of the configuration value you want to get/set, which can be a simple key name, or PluginName/ElementName for plugin configurations.  Examples:
+-
+!config set server 127.0.0.1
+!config set port 6667
+!config set Weather/APIKey cxs2x8wb5eh8mydgf74qa4s
+!config set Twitter/AccessTokenSecret BqF4txQFOWvdgwxdKxaviJlx91gI6Xprks763j
+			</config>
+			<save>
+SAVE
+This causes the bot to immediately save all data to disk.  Normally this process happens automatically in the background every minute, if any data has changed.  However, this command will jump the interval and save instantly.
+			</save>
+			<quit>
+QUIT
+This will cause the bot to disconnect from the IRC server and shut down. It will NOT restart.
+			</quit>
+			<restart>
+RESTART
+This will cause the bot to disconnect and reconnect to the IRC server.
+			</restart>
+			<version>
+VERSION
+This will emit the current installed version of the SimpleBot software, as well as check EffectSoftware.com to see if there is a newer version available.
+			</version>
+			<upgrade>
+UPGRADE
+UPGRADE branch
+This command upgrades the bot to the latest available version on EffectSoftware.com.  If you enter the command by itself, it upgrades to the latest version in the current branch (i.e. stable, dev, etc.).  However, you can also switch branches using the upgrade command.  Just include the branch name after the command.
+For example, if you are on the stable branch and want to switch to the bleeding-edge development branch, type: !upgrade dev
+			</upgrade>
+		</Detail>
+	</Help>
+</PluginConfig>

@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Version>1.0</Version>
+	
+	<Access>
+		<Default>half</Default>
+	</Access>
+	
+	<Help>
+		<Brief>
+POINTS - Manage a "points" system to give special users credit.
+AWARD - Award points to a user.
+DEDUCT - Deduct points from a user.
+SCORES - Show the top scores or clears the list.
+		</Brief>
+		<Detail>
+			<award>
+AWARD nickname points
+-
+This gives the target user the specified amount of "points".  Points are an arbitrary score rating which can be used for whatever you want.  The amount of points must be an integer.  Examples:
+-
+!award eric 50
+!award nancy 10
+			</award>
+			<deduct>
+DEDUCT nickname points
+-
+This is the opposite of award, meaning it takes points away from the user.  If the user's score hits zero (or below) they are removed from the score list.  Examples:
+-
+!deduct eric 50
+!deduct nancy 10
+			</deduct>
+			<scores>
+SCORES
+SCORES 20
+SCORES clear
+-
+This shows you the top scoring users with the most points.  It defaults to showing the top 10, but you can include a different number to show the top N users.  To clear ALL the scores from all users, enter "!scores clear".
+			</scores>
+			<points>
+POINTS AWARD - Award points to a user.
+POINTS DEDUCT - Deduct points from a user.
+POINTS SCORES - Show the top scores or clears the list.
+-
+Use these commands to manage a "points" system for your users.  Give special users points for rewards that you invent.  You can reward or deduct points, and see the current "scores" of the top users.  You can optionally omit the POINTS command and just type the sub-commmands directly.  See help on the individual sub-commands for more details, e.g. HELP AWARD or HELP SCORES.
+			</points>
+		</Detail>
+	</Help>
+</PluginConfig>

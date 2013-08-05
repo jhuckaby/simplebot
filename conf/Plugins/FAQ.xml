@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Version>1.0</Version>
+	
+	<Access>
+		<Default>op</Default>
+	</Access>
+	
+	<Help>
+		<Brief>
+FAQ - Register a custom FAQ command which can be recalled at any time.
+		</Brief>
+		<Detail>
+			<faq>
+FAQ command answer
+-
+This registers a custom FAQ command and associates some text with it.  Then, users can recall the FAQ answer by entering the custom command just like any other bot command.  Examples:
+-
+!faq myserver Welcome to my server!  Please read the rules at http://myserver.com/rules/
+!myserver
+			</faq>
+		</Detail>
+	</Help>
+</PluginConfig>

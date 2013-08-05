@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Version>1.0</Version>
+	
+	<Access>
+		<Default>op</Default>
+	</Access>
+	
+	<Help>
+		<Brief>
+HELLO - Set auto-greeting so bot says hello to you when you join.
+BYE - Set auto-goodbye so bot says goodbye to you after you leave.
+		</Brief>
+		<Detail>
+			<hello>
+HELLO greeting-text
+This sets an auto-greeting of your choice, which the bot will remember. When you join a channel that the bot is in, it will speak your custom greeting.  Omit greeting text to disable.
+			</hello>
+			<bye>
+BYE goodbye-text
+This sets an automatic "goodbye" that the bot will speak in each channel you leave (or all channels if you drop off IRC). Omit goodbye text to disable.
+			</bye>
+		</Detail>
+	</Help>
+</PluginConfig>

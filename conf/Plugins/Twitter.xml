@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Version>1.0</Version>
+	
+	<!-- API Keys for Twitter API v1.1 -->
+	<ConsumerKey>pDmEV222Y9zr9N9aBl84ww</ConsumerKey>
+	<ConsumerSecret>CSQYPSkpxf0G2nxU30VUaBgyI0T57h4dAxlb9vcHChg</ConsumerSecret>
+	<AccessToken>2904691-dxZ2eEc86hj2kPRrL9RpG3WCRSWMMC3eVV8InOOns</AccessToken>
+	<AccessTokenSecret>fBUqF4tQxQFOfWvdUgwxdCKxavaiJlxs91gIO6XprM</AccessTokenSecret>
+	<APIPingFreq>60</APIPingFreq>
+	
+	<Access>
+		<Default>op</Default>
+	</Access>
+	
+	<Help>
+		<Brief>
+TWITTER - Follow people on twitter, or retweet someone's latest tweet.
+RT - Retweet the last tweet of any Twitter username.
+FOLLOW - Start following a Twitter username in the current channel.
+UNFOLLOW - Stop following a Twitter username in the current channel.
+FOLLOWING - List all users we are current following on Twitter.
+		</Brief>
+		<Detail>
+			<rt>
+RT @username
+-
+Retweet the last tweet of the specified Twitter username.  Will omit @replies and RTs by the user.
+			</rt>
+			<follow>
+FOLLOW @username
+-
+Starts following @username's tweets on Twitter, and automatically echos them into the current channel.  Will omit @replies and RTs by the user.  Please note that due to Twitter API throttling, the bot can only check one per user's timeline once per minute, so if the bot is following 2 people, it may take up to 2 minutes to see new tweets from either of them.
+			</follow>
+			<unfollow>
+UNFOLLOW @username
+-
+Stop following @username's tweets in the current channel.
+			</unfollow>
+			<following>
+FOLLOWING
+-
+List all users we are currently following on Twitter, and in which channels.
+			</following>
+			<twitter>
+TWITTER RT - Retweet the last tweet of any Twitter username into the current channel.
+TWITTER FOLLOW - Start following a Twitter username in the current channel.
+TWITTER UNFOLLOW - Stop following a Twitter username in the current channel.
+TWITTER FOLLOWING - List all users we are current following on Twitter.
+TWITTER RELOAD - Reload the Twitter Plugin (reconnect to the Twitter API).
+-
+Use these commands to follow people on twitter, manage your follow list, or retweet the latest tweet by any Twitter user.  You can optionally omit the TWITTER command and just type the sub-commmands directly (except for RELOAD).  See help on the individual sub-commands for more details, e.g. HELP RT or HELP FOLLOW.
+-
+To set up the Twitter Plugin for the first time, you will have to register for an API key at dev.twitter.com.  This is a free developer API so the bot can establish a connection on your account's behalf, to read tweets using the officialy supported Twitter API v1.1.  Go to https://dev.twitter.com/ to get started.
+To register the bot, go to https://dev.twitter.com/apps and click "Create a new application".  Fill out the form, naming the application whatever you want.  The bot only requires "Read Only" access, and you can leave the "Callback URL" blank.
+When finished, click "Create your Twitter application".  At this point you should be given 4 different alphanumeric keys, a "Consumer key", "Consumer secret", "Access token" and "Access token secret".  Teach all four of these to the bot like this:
+-
+!config set Twitter/ConsumerKey YOUR_CONSUMER_KEY_HERE
+!config set Twitter/ConsumerSecret YOUR_CONSUMER_SECRET_HERE
+!config set Twitter/AccessToken YOUR_ACCESS_TOKEN_HERE
+!config set Twitter/AccessTokenSecret YOUR_ACCESS_TOKEN_SECRET_HERE
+-
+At this point the Twitter Plugin should be ready to use, and the API keys will be saved in case the bot restarts.  Test it by trying to retweet your last tweet into chat: "!rt @YOUR_TWITTER_NAME".
+			</twitter>
+		</Detail>
+	</Help>
+</PluginConfig>

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Version>1.0</Version>
+	
+	<Access>
+		<Default>voice</Default>
+	</Access>
+	
+	<Help>
+		<Brief>
+GOOGLE - Perform google search and return first result.
+DEFINE - Define term using Google's Define API.
+		</Brief>
+		<Detail>
+			<google>
+GOOGLE search-query
+GOOGLE nickname
+This uses the Google Search API to search for a query, and returns the first result.  If a username is specified, the last thing the user said is used as the query.  The result is emitted to the current channel.
+			</google>
+			<define>
+DEFINE term
+This uses the Google Define API to locate a suitable definition for a term.  The result is emitted to the current channel.
+			</define>
+		</Detail>
+	</Help>
+</PluginConfig>

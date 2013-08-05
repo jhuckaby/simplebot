@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Version>1.0</Version>
+	
+	<Access>
+		<Default>0</Default>
+	</Access>
+	
+	<Help>
+		<Brief>
+HELP - Show this help text.
+		</Brief>
+		<Detail>
+			<help>
+HELP
+HELP command
+Shows general help, or if a command is specified, shows help for that particular command.
+			</help>
+		</Detail>
+	</Help>
+</PluginConfig>

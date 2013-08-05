@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Version>1.0</Version>
+	
+	<Intros>
+		is a, is nothing but a, is worse than a, is like a, is akin to a
+	</Intros>
+	<Adjectives>
+		acidic antique contemptible culturally-unsound despicable evil fermented
+		festering foul fulminating humid impure inept inferior industrial
+		left-over low-quality malodorous off-color penguin-molesting
+		petrified pointy-nosed salty sausage-snorfling tastless tempestuous
+		tepid tofu-nibbling unintelligent unoriginal uninspiring weasel-smelling
+		wretched spam-sucking egg-sucking decayed halfbaked infected squishy
+		porous pickled coughed-up thick vapid hacked-up
+		unmuzzled bawdy vain lumpish churlish fobbing rank craven puking
+		jarring fly-bitten pox-marked fen-sucked spongy droning gleeking warped
+		currish milk-livered surly mammering ill-borne beef-witted tickle-brained
+		half-faced headless wayward rump-fed onion-eyed beslubbering villainous
+		lewd-minded cockered full-gorged rude-snouted crook-pated pribbling
+		dread-bolted fool-born puny fawning sheep-biting dankish goatish
+		weather-bitten knotty-pated malt-wormy saucyspleened motley-mind
+		it-fowling vassal-willed loggerheaded clapper-clawed frothy ruttish
+		clouted common-kissing pignutted folly-fallen plume-plucked flap-mouthed
+		swag-bellied dizzy-eyed gorbellied weedy reeky measled spur-galled mangled
+		impertinent bootless toad-spotted hasty-witted horn-beat yeasty
+		imp-bladdereddle-headed boil-brained tottering hedge-born hugger-muggered 
+		elf-skinned
+		used heavy cheap rigid soft collapsed fat slow mean sad small huge stretched mediocre nasty erupting painful severed weathered tortured sliced diced alcoholic aged lazy savage smelly moldy old discarded abandoned disliked disproportioned granulated pureed ruptured wretched drunk hungover lame disemboweled disenchanted fraudulent ripped torn homeless shredded gangly amputated putrid disowned disingenuous soured twisted skewered toasted estranged meaningless soggy obese cancerous infected uncultured freeloading artless errant infectious spleeny venomed beetle-headed clay-brained fat-kidneyed slack-jawed ill-nurtured plague-ridden rough-hewn dimwitted
+	</Adjectives>
+	<Amounts>
+		accumulation bucket coagulation enema-bucketful gob half-mouthful
+		heap mass mound petrification pile puddle stack thimbleful tongueful
+		ooze quart bag plate assload ocean lake river box truckload cheekful buildup sack
+	</Amounts>
+	<Nouns>
+		bat|toenails bug|spit cat|hair chicken|piss dog|vomit dung
+		fat-woman's|stomach-bile fish|heads guano gunk pond|scum rat|retch
+		waffle-house|grits yoo-hoo Windows|install|disks
+		dog|balls seagull|puke cat|bladders pus urine|samples
+		squirrel|guts snake|assholes snake|bait buzzard|gizzards
+		cat-hair-balls rat-farts pods armadillo|snouts entrails
+		snake|snot eel|ooze slurpee-backwash toxic|waste Stimpy-drool
+		poopy poop carpet|droppings jizzum cold|sores anal|warts
+		zits pimples giraffe|intestines goat|spleens kitten|livers dead|swines miscreants maggot-pies joltheads horn-beasts hedge-pigs gudgeons foot-lickers flax-wenches canker-blossoms boar-pigs pig-dogs bladders barnacles trainwrecks wet|blankets
+	</Nouns>
+	
+	<Access>
+		<Default>voice</Default>
+	</Access>
+	
+	<Help>
+		<Brief>
+INSULT - Insult a user.
+		</Brief>
+		<Detail>
+			<insult>
+INSULT nickname
+Generates a random insult and throws it at the target user.  The insult database was borrowed and modified from the Perl Acme-Scurvy-Whoreson-BilgeRat-Backend-insultserver module: http://search.cpan.org/dist/Acme-Scurvy-Whoreson-BilgeRat-Backend-insultserver/
+			</insult>
+		</Detail>
+	</Help>
+</PluginConfig>

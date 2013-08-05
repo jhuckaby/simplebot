@@ -1,0 +1,5 @@
+Hello! I am [nick], a general-purpose bot designed to assist with
+managing IRC channels. I was written by Joseph Huckaby in 2011 - 2013.
+My source code is free, MIT licensed and available on GitHub.
+
+I have the following commands installed:
