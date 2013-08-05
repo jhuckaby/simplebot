@@ -487,7 +487,7 @@ sub version {
 		my $json = eval { json_parse( $resp->content() ) };
 		if ($json && $json->{version}) {
 			if ($json->{id} ne $version->{BuildID}) {
-				push @$lines, "A newer ".$version->{Branch}." version of SimpleBot is available! (v" . $json->{version} . '-' . $version->{build} . ')';
+				push @$lines, "A newer ".$version->{Branch}." version of SimpleBot is available! (v" . $json->{version} . '-' . $json->{build} . ')';
 				push @$lines, "Use the UPGRADE command to upgrade the bot, i.e. '!upgrade'";
 			}
 			else {
