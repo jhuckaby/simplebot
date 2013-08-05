@@ -479,9 +479,8 @@ sub version {
 	my $version = $self->{bot}->{version};
 	my $lines = [];
 	
-	push @$lines, 'This is SimpleBot v' . $version->{Major} . '-' . $version->{Minor} . ' (' . $version->{Branch} . ')';
-	push @$lines, "Build ID: " . $version->{BuildID};
-	push @$lines, '-';
+	push @$lines, 'This is SimpleBot version ' . $version->{Major} . '-' . $version->{Minor} . ' (' . $version->{Branch} . ' branch)';
+	push @$lines, "(Build ID: " . $version->{BuildID} . ")";
 	
 	my $resp = wget('http://effectsoftware.com/software/simplebot/version-'.$version->{Branch}.'.json', 5);
 	if ($resp->is_success()) {
@@ -489,7 +488,7 @@ sub version {
 		if ($json && $json->{version}) {
 			if ($json->{id} ne $version->{BuildID}) {
 				push @$lines, "A newer ".$version->{Branch}." version of SimpleBot is available! (v" . $json->{version} . '-' . $version->{build} . ')';
-				push @$lines, "Use the UPGRADE command to upgrade the bot now, i.e. '!upgrade'";
+				push @$lines, "Use the UPGRADE command to upgrade the bot, i.e. '!upgrade'";
 			}
 			else {
 				push @$lines, "Your software is up to date.";
@@ -503,7 +502,12 @@ sub version {
 		push @$lines, "Unable to determine latest version on EffectSoftware.com: " . $resp->status_line();
 	}
 	
-	$self->say( %$args, body => join("\n", $lines) );
+	foreach my $line (@$lines) {
+		if ($line =~ /\S/) {
+			$args->{body} = $line;
+			$self->{bot}->say( $args );
+		}
+	}
 	return undef;
 }
 
