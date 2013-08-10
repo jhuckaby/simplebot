@@ -3,7 +3,7 @@
 	<Version>1.0</Version>
 	
 	<!-- API Key for free.worldweatheronline.com -->
-	<APIKey>fjhd</APIKey>
+	<APIKey></APIKey>
 	
 	<Access>
 		<Default>voice</Default>

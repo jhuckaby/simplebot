@@ -3,10 +3,10 @@
 	<Version>1.0</Version>
 	
 	<!-- API Keys for Twitter API v1.1 -->
-	<ConsumerKey>pDmEV222Y9zr9N9aBl84ww</ConsumerKey>
-	<ConsumerSecret>CSQYPSkpxf0G2nxU30VUaBgyI0T57h4dAxlb9vcHChg</ConsumerSecret>
-	<AccessToken>2904691-dxZ2eEc86hj2kPRrL9RpG3WCRSWMMC3eVV8InOOns</AccessToken>
-	<AccessTokenSecret>fBUqF4tQxQFOfWvdUgwxdCKxavaiJlxs91gIO6XprM</AccessTokenSecret>
+	<ConsumerKey></ConsumerKey>
+	<ConsumerSecret></ConsumerSecret>
+	<AccessToken></AccessToken>
+	<AccessTokenSecret></AccessTokenSecret>
 	<APIPingFreq>60</APIPingFreq>
 	
 	<Access>
