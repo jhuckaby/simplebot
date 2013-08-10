@@ -378,8 +378,16 @@ sub exec {
 	$self->log_debug(6, "Executing shell command: $cmd");
 	
 	my $response = trim(`$cmd 2>&1`);
-	if ($response !~ /\S/) { $response = undef; }
-	return $response;
+	
+	if ($response =~ /\S/) {
+		foreach my $line (split(/\n/, $response)) {
+			if ($line =~ /\S/) {
+				$args->{body} = $line;
+				$self->{bot}->say( $args );
+			}
+		}
+	}
+	return undef;
 }
 
 sub quit {
@@ -479,8 +487,9 @@ sub version {
 	my $version = $self->{bot}->{version};
 	my $lines = [];
 	
-	push @$lines, 'This is SimpleBot version ' . $version->{Major} . '-' . $version->{Minor} . ' (' . $version->{Branch} . ' branch)';
-	push @$lines, "(Build ID: " . $version->{BuildID} . ")";
+	my $short_build_id = substr($version->{BuildID}, 0, 8);
+	push @$lines, 'This is SimpleBot version ' . $version->{Major} . '-' . $version->{Minor} . ' (' . $version->{Branch} . " branch, build $short_build_id)";
+	# push @$lines, "(Build ID: " . $version->{BuildID} . ")";
 	
 	my $resp = wget('http://effectsoftware.com/software/simplebot/version-'.$version->{Branch}.'.json', 5);
 	if ($resp->is_success()) {
