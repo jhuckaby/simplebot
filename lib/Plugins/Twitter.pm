@@ -84,6 +84,10 @@ sub rt {
 	my ($self, $username, $args) = @_;
 	$username = ntu($username);
 	
+	if (!$self->{twitter}) {
+		return "ERROR: Twitter Plugin is not configured.  Please type: !help twitter";
+	}
+	
 	$self->{bot}->forkit(
 		channel => nch( $args->{channel} ),
 		who => $args->{who_disp},
@@ -91,8 +95,9 @@ sub rt {
 			eval {
 				my $tweet = $self->get_last_tweet($username);
 				if ($tweet) { print 'RT @' . $username . " " . $tweet->{text} . "\n"; }
+				else { print "Could not get latest tweet for \@$username.\n"; }
 			}; # eval
-			if ($@) { $self->log_debug(2, "Twitter Error: $@"); }
+			if ($@) { print "Twitter Error: $@\n"; }
 		} # sub
 	);
 	
@@ -104,6 +109,10 @@ sub follow {
 	my ($self, $username, $args) = @_;
 	$username = ntu($username);
 	my $channel = sch($args->{channel});
+	
+	if (!$self->{twitter}) {
+		return "ERROR: Twitter Plugin is not configured.  Please type: !help twitter";
+	}
 	if ($channel eq 'msg') {
 		return "Twitter: Cannot follow someone in a private message channel.  Please issue command in a real #channel.";
 	}
@@ -136,6 +145,10 @@ sub unfollow {
 	my ($self, $username, $args) = @_;
 	$username = ntu($username);
 	
+	if (!$self->{twitter}) {
+		return "ERROR: Twitter Plugin is not configured.  Please type: !help twitter";
+	}
+	
 	if ($self->{data}->{follow}->{$username}) {
 		delete $self->{data}->{follow}->{$username};
 		$self->dirty(1);
@@ -149,6 +162,10 @@ sub unfollow {
 sub following {
 	# list all followers
 	my ($self, $value, $args) = @_;
+	
+	if (!$self->{twitter}) {
+		return "ERROR: Twitter Plugin is not configured.  Please type: !help twitter";
+	}
 
 	my $users = [ sort keys %{$self->{data}->{follow}} ];
 	if (scalar @$users) {
@@ -196,8 +213,11 @@ sub tick {
 							} );
 							print 'RT @' . $username . " " . $tweet->{text} . "\n";
 						} # new tweet!
+						else {
+							print "\n"; # child forks always need to print something	
+						}
 					}; # eval
-					if ($@) { $self->log_debug(2, "Twitter Error: $@"); }
+					if ($@) { print "Twitter Error: $@\n"; }
 				} # sub
 			); # fork
 			

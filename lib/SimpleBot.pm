@@ -138,8 +138,8 @@ sub init {
 	}
 	
 	# store plugin user access levels and config overrides in data system
-	$self->{_eb_data}->{plugin_access} = {};
-	$self->{_eb_data}->{plugin_config} = {};
+	$self->{_eb_data}->{plugin_access} ||= {};
+	$self->{_eb_data}->{plugin_config} ||= {};
 	
 	# load all plugins
 	$self->{_eb_plugins} = [];
