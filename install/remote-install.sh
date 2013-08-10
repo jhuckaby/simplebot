@@ -47,7 +47,7 @@ fi
 if which cpanm >/dev/null 2>&1 ; then 
 	echo "cpanm is already installed, good."
 else
-	export PERL_CPANM_OPT="--notest"
+	export PERL_CPANM_OPT="--notest --configure-timeout=3600"
 	if which curl >/dev/null 2>&1 ; then 
 		curl -L http://cpanmin.us | perl - App::cpanminus
 	else

@@ -56,7 +56,7 @@ foreach my $module (split(/\n/, load_file("$base_dir/install/perl-modules.txt"))
 			if (!$cpanm_bin) {
 				die "\nERROR: Could not locate 'cpanm' binary in the usual places.  Installer cannot continue.\n\n";
 			}
-			system("$cpanm_bin -n $module");
+			system("$cpanm_bin -n --configure-timeout=3600 $module");
 			my $result = system($cmd);
 			if ($result != 0) {
 				die "\nERROR: Failed to install Perl module: $module.  Please try to install it manually, then run this installer again.\n\n";
