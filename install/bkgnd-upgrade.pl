@@ -60,6 +60,7 @@ if (!$fh) { death("Failed to open pipe to: $temp_file: $!\n"); }
 my $line = undef;
 while (defined($line = <$fh>)) {
 	if ($line =~ /\S/) { log_msg( $line ); }
+	last if $line =~ /SimpleBot Daemon started/;
 }
 $fh->close();
 
