@@ -10,6 +10,7 @@ package SimpleBot::Plugin::GoogleCalendar;
 # !calendar current
 # !calendar next
 # !calendar refresh
+# !calendar delete
 ##
 
 use strict;
@@ -70,12 +71,18 @@ sub current {
 	my ($self, $msg, $args) = @_;
 	my $username = $args->{who};
 	my $chan = $args->{channel};
+	my $tz_name = '';
+	
+	if ($msg =~ /\S/) {
+		$tz_name = find_timezone_name( $msg );
+		if (!$tz_name) { return "$username: Could not determine timezone.  Please type '!help timezone' for formatting hints."; }
+	}
 	
 	$self->{bot}->forkit(
 		channel => nch( $args->{channel} ),
 		who => $args->{who_disp},
 		run => sub {
-			my $event = $self->get_cal_event($chan, 'current');
+			my $event = $self->get_cal_event($chan, 'current', $tz_name);
 			if ($event && ref($event)) {
 				print "Current Event: " . trim($event->{Title} || $event->{Description}) . " (started ".$event->{NiceWhen}.")\n";
 			}
@@ -96,12 +103,18 @@ sub next {
 	my ($self, $msg, $args) = @_;
 	my $username = $args->{who};
 	my $chan = $args->{channel};
+	my $tz_name = '';
+	
+	if ($msg =~ /\S/) {
+		$tz_name = find_timezone_name( $msg );
+		if (!$tz_name) { return "$username: Could not determine timezone.  Please type '!help timezone' for formatting hints."; }
+	}
 	
 	$self->{bot}->forkit(
 		channel => nch( $args->{channel} ),
 		who => $args->{who_disp},
 		run => sub {
-			my $event = $self->get_cal_event($chan, 'next');
+			my $event = $self->get_cal_event($chan, 'next', $tz_name);
 			if ($event && ref($event)) {
 				print "Next Event: " . trim($event->{Title} || $event->{Description}) . " ".$event->{NiceWhen}."\n";
 			}
@@ -174,7 +187,8 @@ sub get_cal_event {
 	# get current and next events from calendar
 	my $self = shift;
 	my $chan = shift;
-	my $type = shift || '';
+	my $type = shift;
+	my $disp_tz_name = shift || '';
 	
 	my $cal_file = 'data/' . $self->{params}->{server} . '/calendar-'.sch(lc($chan)).'.ics';
 	my $stats = [ stat($cal_file) ];
@@ -188,7 +202,7 @@ sub get_cal_event {
 			if ($cal_id !~ /\@/) { $cal_id .= '@group.calendar.google.com'; }
 			my $cal_url = 'http://www.google.com/calendar/ical/'.uri_escape($cal_id).'/public/basic.ics';
 			$self->log_debug(8, "Fetching $chan calendar from google: $cal_url");
-			my $resp = wget($cal_url);
+			my $resp = wget($cal_url, 5);
 			if ($resp->is_success()) {
 				save_file( $cal_file, $resp->content() );
 			}
@@ -223,7 +237,8 @@ sub get_cal_event {
 				'Until' => '',
 				'Title' => '',
 				'Description' => '',
-				'ID' => ''
+				'ID' => '',
+				'DispTimeZone' => $disp_tz_name
 			};
 		}
 		
@@ -322,9 +337,10 @@ sub get_cal_event {
 sub add_event_metadata {
 	# add time/date into to event, for display purposes
 	my $event = shift;
+	my $tz_name = $event->{DispTimeZone} || $event->{TimeZone};
 	
-	my $dt = DateTime->from_epoch( epoch => $event->{CurrentStart}, time_zone => $event->{TimeZone} );
-	my $dt_now = DateTime->from_epoch( epoch => time(), time_zone => $event->{TimeZone} );
+	my $dt = DateTime->from_epoch( epoch => $event->{CurrentStart}, time_zone => $tz_name );
+	my $dt_now = DateTime->from_epoch( epoch => time(), time_zone => $tz_name );
 	my $nice_when = '';
 	if ($dt->ymd() ne $dt_now->ymd()) {
 		$nice_when = 'on ' . $dt->day_name() . ', ' . $dt->day() . ' ' . $dt->month_name() . ' ';
