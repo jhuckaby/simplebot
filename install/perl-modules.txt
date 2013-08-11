@@ -10,3 +10,5 @@ DateTime::TimeZone::Alias
 Net::Twitter::Lite
 Net::Ping::External
 Math::Units
+Net::OAuth
+Crypt::SSLeay
