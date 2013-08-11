@@ -16,7 +16,7 @@ use DateTime;
 
 sub init {
 	my $self = shift;
-	$self->register_commands('timezone', 'location', 'weather', 'forecast');
+	$self->register_commands('location', 'weather', 'forecast');
 }
 
 sub location {
@@ -25,20 +25,6 @@ sub location {
 	my $username = $args->{who};
 	
 	if (!$value) { return "$username: You must specify your location for me to remember it."; }
-	
-	# user can set time zone independent of world weather location service
-	my $tz_name = find_timezone_name( $value );
-	if ($tz_name) {
-		$self->log_debug(9, "Got timezone name: $tz_name (from: $value)");
-		$self->{data}->{users} ||= {};
-		my $user = $self->{data}->{users}->{lc($username)} ||= {};
-		$user->{tz_name} = $tz_name;
-		$self->dirty(1);
-		
-		my $dt = DateTime->from_epoch( epoch => time(), time_zone => $tz_name );
-		my $tz_short_name = $dt->time_zone_short_name();
-		return "$username: Okay, I'll remember your timezone '$tz_name' (currently $tz_short_name) for future queries.\n";
-	}
 	
 	if (!$self->{config}->{APIKey}) {
 		return "$username: No API key is set for WorldWeatherOnline.com (used for their location service).  Please type: !help weather";
@@ -72,7 +58,7 @@ sub location {
 							utc_offset => $utc_offset
 						} );
 						
-						print "$username: Okay, I'll remember your location of $nice_loc for future queries.\n";
+						print "$username: Okay, I'll remember your location of $nice_loc for future weather queries.\n";
 					}
 					elsif ($data->{error} && $data->{error}->[0] && $data->{error}->[0]->{msg}) {
 						$response = "Location Error: " . $data->{error}->[0]->{msg};
@@ -97,7 +83,6 @@ sub location {
 	
 	return undef;
 }
-sub timezone { return location(@_); }
 
 sub update_user_loc {
 	# called from enqueue_plugin_task
@@ -113,9 +98,6 @@ sub update_user_loc {
 			$user->{$key} = $task->{$key};
 		}
 	}
-	
-	my $tz_name = find_timezone_name( $task->{utc_offset} );
-	$user->{tz_name} = $tz_name || '';
 	
 	$self->log_debug(9, "Setting default weather location for $username: " . json_compose($user));
 	

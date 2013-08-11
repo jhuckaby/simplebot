@@ -14,7 +14,6 @@
 WEATHER - Get current conditions for US zip code or 'city country'.
 FORECAST - Set 5 day forecast for US zip code or 'city country'.
 LOCATION - Set your default location and time zone for future queries.
-TIMEZONE - Set your timezone for date/time related queries.
 		</Brief>
 		<Detail>
 			<weather>
@@ -42,16 +41,6 @@ LOCATION zipcode
 Set your location for future weather and date/time queries, which the bot remembers.  This also looks up your time zone based on your location, and stores that for displaying and calculating dates and times for you.
 See "!help weather" for details on setting up your API key for WorldWeatherOnline.com (used for the location service -- it's free).
 			</location>
-			<timezone>
-TIMEZONE zone
--
-Set your personal timezone for future date/time queries.  It will always be remembered for you, so you only have to enter it once.  This affects bot commands such as !time, !alarm and !countdown.  You can use any of the following formats:
--
-!timezone Pacific
-!timezone Eastern
-!timezone America/Los_Angeles
-!timezone GMT-0800
-			</timezone>
 		</Detail>
 	</Help>
 </PluginConfig>

@@ -18,6 +18,11 @@ package SimpleBot::Plugin::Clock;
 # 
 # !timer 5:00
 # !timer stop
+#
+# !timezone Pacific
+# !timezone Eastern
+# !timezone America/Los_Angeles
+# !timezone GMT-0800
 ##
 
 use strict;
@@ -36,7 +41,7 @@ my $month_re = "(january|jan|february|feb|march|mar|april|apr|may|june|jun|july|
 
 sub init {
 	my $self = shift;
-	$self->register_commands('clock', 'time', 'alarm', 'countdown', 'timer');
+	$self->register_commands('clock', 'time', 'alarm', 'countdown', 'timer', 'timezone');
 }
 
 sub handler {
@@ -44,6 +49,30 @@ sub handler {
 	my ($self, $cmd, $value, $args) = @_;
 	if ($cmd =~ /time/i) { return $self->clock($value, $args); }
 	elsif ($cmd =~ /alarm/i) { return $self->alarm($value, $args); }
+}
+
+sub timezone {
+	# set user's timezone for date/time related queries
+	my ($self, $value, $args) = @_;
+	my $username = $args->{who};
+	
+	if (!$value) { return "$username: You must specify your timezone for me to remember it."; }
+	
+	my $tz_name = find_timezone_name( $value );
+	if ($tz_name) {
+		$self->log_debug(9, "Got timezone name: $tz_name (from: $value)");
+		$self->{data}->{users} ||= {};
+		my $user = $self->{data}->{users}->{lc($username)} ||= {};
+		$user->{tz_name} = $tz_name;
+		$self->dirty(1);
+		
+		my $dt = DateTime->from_epoch( epoch => time(), time_zone => $tz_name );
+		my $tz_short_name = $dt->time_zone_short_name();
+		return "$username: Okay, I'll remember your timezone '$tz_name' (currently $tz_short_name) for future date/time queries.\n";
+	}
+	else {
+		return "$username: Could not determine timezone.  Please type !help timezone.\n";
+	}
 }
 
 sub clock {
@@ -399,6 +428,8 @@ sub get_alarm_from_raw {
 	# !alarm set yearly 5 june 8:30 am
 	# !alarm set 8:30 pm
 	
+	$raw =~ s/\btoday\b//i; # defaults to today, so can remove this word
+	
 	$raw =~ s/\bmidnight\b/12:00 am/i;
 	$raw =~ s/\bnoon\b/12:00 pm/i;
 	$raw =~ s/(\d+\:\d+)\:\d+/$1/; # strip seconds
@@ -534,13 +565,13 @@ sub get_nice_alarm_desc {
 }
 
 sub get_user_timezone {
-	# try to determine user's timezone from our weather db
+	# try to determine user's timezone from db
 	my $self = shift;
 	my $username = shift;
 	
 	my $tz_name = '';
-	if ($self->{bot}->{_eb_data}->{plugins}->{Weather}->{users} && $self->{bot}->{_eb_data}->{plugins}->{Weather}->{users}->{$username}) {
-		$tz_name = $self->{bot}->{_eb_data}->{plugins}->{Weather}->{users}->{$username}->{tz_name} || '';
+	if ($self->{data}->{users} && $self->{data}->{users}->{$username}) {
+		$tz_name = $self->{data}->{users}->{$username}->{tz_name} || '';
 	}
 	
 	return $tz_name;
