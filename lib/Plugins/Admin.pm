@@ -178,11 +178,12 @@ sub say {
 	
 	if (ref($value)) { die; }
 	
-	if ($value =~ /^\#(\w+)\s+/) {
+	if ($value =~ /^\#(\w+)\s+(.+)$/) {
 		my $channel = $1;
-		$self->log_debug(6, "Saying into $channel: $value");
+		my $msg = $2;
+		$self->log_debug(6, "Saying into $channel: $msg");
 		$self->{bot}->say({
-			'body' => $value,
+			'body' => $msg,
 			# 'who' => $args->{who_disp},
 			# 'address' => 'msg',
 			'channel' => nch($channel)
@@ -297,14 +298,15 @@ sub emote {
 	
 	if (ref($value)) { die; }
 	
-	if ($value =~ s/^\#(\w+)\s+//) {
+	if ($value =~ /^\#(\w+)\s+(.+)$/) {
 		my $channel = $1;
-		$self->log_debug(6, "Emoting into $channel: $value");
+		my $msg = $2;
+		$self->log_debug(6, "Emoting into $channel: $msg");
 		$self->{bot}->emote({
-			'body' => $value,
+			'body' => $msg,
 			# 'who' => $args->{who_disp},
 			# 'address' => 'msg',
-			'channel' => $channel
+			'channel' => nch($channel)
 		});
 	}
 	else {
