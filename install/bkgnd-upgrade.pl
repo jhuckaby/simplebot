@@ -23,7 +23,7 @@ $| = 1;
 my $base_dir = abs_path( dirname( dirname($0) ) );
 my $log_file = "$base_dir/logs/upgrade.log";
 
-if ($EUID != 0) { death( "Error: Must be root to upgrade SimpleBot (you are user $EUID).  Exiting.\n" ); }
+if ($EUID != 0) { die( "Error: Must be root to upgrade SimpleBot (you are user $EUID).  Exiting.\n" ); }
 
 my $current_version = get_version();
 my $branch = (shift @ARGV) || $current_version->{Branch};
