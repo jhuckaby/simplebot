@@ -44,6 +44,32 @@ sub poll {
 		# open a new poll
 		my $title = trim($2);
 		if ($poll->{open}) { return "$username: There is a poll already open: " . $poll->{title} . ".  To close this poll, type !poll close"; }
+		
+		$poll->{votes} = {};
+		$poll->{display_titles} = {};
+		
+		if ($title =~ s/\s*\((.+)\)\s*$//) {
+			# limit poll to a specific set of valid vote choices
+			my $values_raw = $1;
+			$poll->{limit_votes} = 1;
+			
+			foreach my $value (split(/\,\s*/, $values_raw)) {
+				$value = trim($value);
+				if ($value =~ /\S/) {
+					$poll->{votes}->{lc($value)} = 0;
+					$poll->{display_titles}->{lc($value)} = $value;
+				}
+			}
+			
+			if (scalar keys %{$poll->{votes}} < 2) {
+				return "$username: You didn't supply enough valid vote choices.  See '!help poll' for details.";
+			}
+		}
+		else {
+			# open ended poll, users can type anything
+			$poll->{limit_votes} = 0;
+		}
+		
 		if (!$title) { return "$username: You need to specify a topic for your poll."; }
 		
 		if ($poll->{total_votes}) { $self->archive_poll($poll); }
@@ -55,13 +81,20 @@ sub poll {
 		$poll->{username} = $username;
 		$poll->{channel} = $chan;
 		$poll->{title} = $title;
-		$poll->{votes} = {};
 		$poll->{users} = {};
-		$poll->{display_titles} = {};
 		$poll->{total_votes} = 0;
 		$self->dirty(1);
 		
-		$self->emote( channel => nch($chan), body => "$username has started a new poll: \"$title\".  Please use the '!vote' command to cast your votes!" );
+		my $response = "";
+		$response .= "$username has started a new poll: \"$title\".  Please use the '!vote' command to cast your vote";
+		if ($poll->{limit_votes}) {
+			$response .= " for one of the following choices: " . get_english_list( [sort values %{$poll->{display_titles}}], 'or' );
+		}
+		else {
+			$response .= "!";
+		}
+		
+		$self->emote( channel => nch($chan), body => $response );
 	}
 	elsif ($cmd =~ /^close/i) {
 		# close a poll
@@ -121,7 +154,7 @@ sub poll {
 		return "$username: Okay, all current poll data deleted (history is preserved).";
 	}
 	else {
-		return "$username: Sorry, I do not understand that poll command.  If you are trying to start a new poll, use: !poll open (your title here)";
+		return "$username: Sorry, I do not understand that poll command.  If you are trying to start a new poll, use: !poll open YOUR TITLE HERE";
 	}
 	
 	return undef;
@@ -133,6 +166,7 @@ sub vote {
 	
 	my $username = $args->{who};
 	my $chan = $args->{channel};
+	my $vote_id = lc($value);
 	
 	if ($chan eq 'msg') {
 		return "You can only vote in a channel with an open poll.";
@@ -151,10 +185,14 @@ sub vote {
 		return "$username: Sorry, you have already cast your vote.";
 	}
 	
+	# poll can limit to a specific set of predefined choices
+	if ($poll->{limit_votes} && !defined($poll->{votes}->{$vote_id})) {
+		return "$username: Sorry, you need to vote for one of the following choices: " . get_english_list( [sort values %{$poll->{display_titles}}], 'or' );
+	}
+	
 	$self->log_debug(9, "User $username voted for: $value");
 	
 	# cast vote
-	my $vote_id = lc($value);
 	$poll->{votes}->{$vote_id}++;
 	$poll->{total_votes}++;
 	$poll->{display_titles}->{$vote_id} ||= $value;

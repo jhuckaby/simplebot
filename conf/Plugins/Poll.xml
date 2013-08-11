@@ -15,15 +15,17 @@ VOTE - Cast your vote for an open poll.
 		</Brief>
 		<Detail>
 			<poll>
-POLL open (my title)
+POLL open MY TITLE
+POLL open MY TITLE (ITEM1, ITEM2, ITEM3)
 POLL status
 POLL close
 POLL results
 POLL history
 -
-This command manages polls.  Use the "!poll open ..." command to start a new poll, but specify the poll title after the command, e.g. "!poll open What's your favorite food?".  Type "!poll close" to close the poll, and "!poll results" to get the voting results.  To see historical polls, use "!poll history".  Examples:
+This command manages polls.  Use the "!poll open ..." command to start a new poll, but specify the poll title after the command, e.g. "!poll open What's your favorite food?".  Type "!poll close" to close the poll, and "!poll results" to get the voting results.  To see historical polls, use "!poll history".  If you want to limit the items people can vote for, include them as a comma-separated list in parenthesis.  Examples:
 -
 !poll open What's your favorite OS?
+!poll open What game should we play? (Minecraft, FTB, Pong)
 !poll close
 !poll results
 			</poll>
