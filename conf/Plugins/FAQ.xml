@@ -13,11 +13,15 @@ FAQ - Register a custom FAQ command which can be recalled at any time.
 		<Detail>
 			<faq>
 FAQ command answer
+FAQ list
+FAQ delete NUMBER
 -
-This registers a custom FAQ command and associates some text with it.  Then, users can recall the FAQ answer by entering the custom command just like any other bot command.  Examples:
+This registers a custom FAQ command and associates some text with it.  Then, users can recall the FAQ answer by entering the custom command just like any other bot command.  You can also use "!faq list" to get a list of all the FAQ commands for the current channel, and "!faq delete NUMBER" to delete them.  Examples:
 -
 !faq myserver Welcome to my server!  Please read the rules at http://myserver.com/rules/
 !myserver
+!faq list
+!faq delete 1
 			</faq>
 		</Detail>
 	</Help>
