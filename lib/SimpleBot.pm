@@ -9,6 +9,7 @@ use HTTP::Date;
 use URI::Escape;
 use Time::HiRes qw/time/;
 use POE;
+use Encode qw(decode encode);
 
 use Tools;
 use Plugin;
@@ -67,6 +68,19 @@ sub run {
 	# run
 	$poe_kernel->run() if !$self->{no_run};
 	return;
+}
+
+sub _fork_utf8_said {
+	# modified version of Bot::BasicBot::_fork_said which decodes UTF-8
+    my ($self, $body, $wheel_id) = @_[OBJECT, ARG0, ARG1];
+    chomp $body;    # remove newline necessary to move data;
+    
+    # pick up the default arguments we squirreled away earlier
+    my $args = $self->{forks}{$wheel_id}{args};
+    $args->{body} = decode('UTF-8', $body, Encode::FB_QUIET);
+    
+    $self->say($args);
+    return;
 }
 
 sub irc_raw_state {
@@ -791,7 +805,7 @@ sub log_debug {
 		$self->{nick},
 		$package,
 		$level,
-		trim($msg)
+		encode('UTF-8', trim($msg), Encode::FB_QUIET)
 	) . "]\n";
 		
 	$fh->print( $line );
