@@ -11,6 +11,7 @@ use strict;
 use base qw( SimpleBot::Plugin );
 use Tools;
 use Net::Twitter::Lite::WithAPIv1_1;
+use Encode qw(decode encode);
 
 sub init {
 	my $self = shift;
@@ -91,10 +92,14 @@ sub rt {
 	$self->{bot}->forkit(
 		channel => nch( $args->{channel} ),
 		who => $args->{who_disp},
+		handler => '_fork_utf8_said',
 		run => sub {
 			eval {
 				my $tweet = $self->get_last_tweet($username);
-				if ($tweet) { print 'RT @' . $username . " " . $tweet->{text} . "\n"; }
+				if ($tweet) {
+					$self->log_debug(9, "Retweeting: $username: " . $tweet->{text});
+					print 'RT @' . $username . " " . encode('UTF-8', $tweet->{text}, Encode::FB_QUIET) . "\n"; 
+				}
 				else { print "Could not get latest tweet for \@$username.\n"; }
 			}; # eval
 			if ($@) { print "Twitter Error: $@\n"; }
@@ -200,6 +205,7 @@ sub tick {
 			
 			$self->{bot}->forkit(
 				channel => nch( $self->{data}->{follow}->{$username}->{channel} ),
+				handler => '_fork_utf8_said',
 				run => sub {
 					eval {
 						my $tweet = $self->get_last_tweet($username);
@@ -211,7 +217,7 @@ sub tick {
 								username => $username,
 								new_tweet_id => $tweet->{id}
 							} );
-							print 'RT @' . $username . " " . $tweet->{text} . "\n";
+							print 'RT @' . $username . " " . encode('UTF-8', $tweet->{text}, Encode::FB_QUIET) . "\n";
 						} # new tweet!
 						else {
 							print "\n"; # child forks always need to print something	
@@ -273,7 +279,8 @@ sub get_last_tweet {
 	
 	if ($result && ref($result) && (scalar @$result)) {
 		my $tweet = shift @$result;
-		$tweet->{text} =~ s@([\x01-\x08\x0B-\x0C\x0E-\x1F\x80-\xFF])@@g;
+		# $tweet->{text} =~ s@([\x01-\x08\x0B-\x0C\x0E-\x1F\x80-\xFF])@@g;
+		# $tweet->{text} = encode('UTF-8', $tweet->{text}, Encode::FB_QUIET);
 		return $tweet;
 	}
 	
