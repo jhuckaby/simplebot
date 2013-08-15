@@ -21,8 +21,10 @@ sub init {
 sub last {
 	# last seen
 	my ($self, $msg, $args) = @_;
-	my $username = lc($args->{who});
+	my $username = lc($msg);
 	my $chan = nch($args->{channel});
+	
+	if ($username !~ /\S/) { return "Invalid syntax.  Please provide a nickname: !last NICKNAME"; }
 	
 	my $users = $self->{bot}->{_eb_temp}->{channels}->{sch($args->{channel})}->{users} || {};
 	if ($users->{$username}) {
