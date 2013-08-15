@@ -12,6 +12,7 @@ use base qw( SimpleBot::Plugin );
 use Tools;
 use HTTP::Date;
 use URI::Escape;
+use Encode qw(decode encode);
 
 sub init {
 	my $self = shift;
@@ -40,30 +41,16 @@ sub google {
 		
 	$self->{bot}->forkit(
 		channel => nch( $args->{channel} ),
+		handler => '_fork_utf8_said',
 		run => sub {
 			eval {
-				my $url = 'http://www.google.com/uds/GwebSearch?callback=receive_google_search_results&context=0&lstkp=0&rsz=large&hl=en&source=gsc&gss=.com&sig=&q='.uri_escape($value).'&key=notsupplied&v=1.0';
-				$self->log_debug(9, "Fetching URL: $url");
-				my $google = file_get_contents( $url );
-				
-				my $items = [];
-				while ($google =~ s@\"titleNoFormatting\"\:"([^\"]+)\"@@) {
-					my $title = $1;
-					$title =~ s/\\x(\w{2})/\%$1/g;
-					$title = uri_unescape( $title );
-					
-					if (!($google =~ s@\"unescapedUrl\"\:\"([^\"]+)\"@@)) { last; }
-					my $link = $1;
-					
-					push @$items, "$title: $link";
-				}
-				
+				my $items = $self->_google_search($value);
 				if (@$items) {
 					my $item = shift @$items;
-					print "$prefix: $item\n";
+					print "$prefix: " . encode('UTF-8', $item, Encode::FB_QUIET) . "\n";
 					
-					my $result_queue_file = 'data/' . $self->{params}->{server} . '/result-queue-' . sch($args->{channel}) . '.txt';
-					save_file( $result_queue_file, join("\n", map { 'Google Result: ' . $_; } @$items) . "\n" );
+					# my $result_queue_file = 'data/' . $self->{params}->{server} . '/result-queue-' . sch($args->{channel}) . '.txt';
+					# save_file( $result_queue_file, join("\n", map { 'Google Result: ' . $_; } @$items) . "\n" );
 				}
 				else {
 					print "No results for: $value\n";
@@ -74,6 +61,30 @@ sub google {
 	);
 }
 
+sub _google_search {
+	# perform google search and return array of matched items as strings of title: link
+	my ($self, $value) = @_;
+	my $items = [];
+	
+	my $url = 'http://www.google.com/uds/GwebSearch?callback=receive_google_search_results&context=0&lstkp=0&rsz=large&hl=en&source=gsc&gss=.com&sig=&q='.uri_escape($value).'&key=notsupplied&v=1.0';
+	$self->log_debug(9, "Fetching Google URL: $url");
+	my $google = file_get_contents( $url );
+	
+	my $items = [];
+	while ($google =~ s@\"titleNoFormatting\"\:"([^\"]+)\"@@) {
+		my $title = $1;
+		$title =~ s/\\x(\w{2})/\%$1/g;
+		$title = uri_unescape( $title );
+		
+		if (!($google =~ s@\"unescapedUrl\"\:\"([^\"]+)\"@@)) { last; }
+		my $link = $1;
+		
+		push @$items, "$title: $link";
+	}
+	
+	return $items;
+}
+
 sub define {
 	# define term using unofficial google api
 	my ($self, $value, $args) = @_;
@@ -82,6 +93,7 @@ sub define {
 	
 	$self->{bot}->forkit(
 		channel => nch( $args->{channel} ),
+		handler => '_fork_utf8_said',
 		run => sub {
 			eval {
 				my $url = 'http://www.google.com/dictionary/json?callback=dict_api.callbacks.id100&q='.uri_escape($value).'&sl=en&tl=en&restrict=pr,de&client=te';
@@ -98,10 +110,17 @@ sub define {
 				}
 				
 				if ($meaning) {
-					print ucfirst($value) . ": $meaning\n";
+					print ucfirst($value) . ": " . encode('UTF-8', $meaning, Encode::FB_QUIET) . "\n";
 				}
 				else {
-					print "No definition found for: $value\n";
+					my $items = $self->_google_search($value);
+					if (@$items) {
+						$meaning = shift @$items;
+						print "No definition found for $value, but a Google search finds: " . encode('UTF-8', $meaning, Encode::FB_QUIET) . "\n";
+					}
+					else {
+						print "No definition found for: $value\n";
+					}
 				}
 			}; # eval
 			if ($@) { $self->log_debug(1, "CHILD CRASH define: $@"); }
