@@ -18,6 +18,7 @@ use DateTime;
 use base qw( SimpleBot::Plugin );
 use Tools;
 use URI::Escape;
+use Encode qw(decode encode);
 
 my $wday_map = {
 	'SU' => 0,
@@ -81,10 +82,11 @@ sub current {
 	$self->{bot}->forkit(
 		channel => nch( $args->{channel} ),
 		who => $args->{who_disp},
+		handler => '_fork_utf8_said',
 		run => sub {
 			my $event = $self->get_cal_event($chan, 'current', $tz_name);
 			if ($event && ref($event)) {
-				print "Current Event: " . trim($event->{Title} || $event->{Description}) . " (started ".$event->{NiceWhen}.")\n";
+				print "Current Event: " . encode('UTF-8', trim($event->{Title} || $event->{Description}), Encode::FB_QUIET) . " (started ".$event->{NiceWhen}.")\n";
 			}
 			elsif ($event) {
 				print "$event\n";
@@ -113,10 +115,11 @@ sub next {
 	$self->{bot}->forkit(
 		channel => nch( $args->{channel} ),
 		who => $args->{who_disp},
+		handler => '_fork_utf8_said',
 		run => sub {
 			my $event = $self->get_cal_event($chan, 'next', $tz_name);
 			if ($event && ref($event)) {
-				print "Next Event: " . trim($event->{Title} || $event->{Description}) . " ".$event->{NiceWhen}."\n";
+				print "Next Event: " . encode('UTF-8', trim($event->{Title} || $event->{Description}), Encode::FB_QUIET) . " ".$event->{NiceWhen}."\n";
 			}
 			elsif ($event) {
 				print "$event\n";
