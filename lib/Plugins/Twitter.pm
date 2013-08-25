@@ -281,6 +281,7 @@ sub get_last_tweet {
 		my $tweet = shift @$result;
 		# $tweet->{text} =~ s@([\x01-\x08\x0B-\x0C\x0E-\x1F\x80-\xFF])@@g;
 		# $tweet->{text} = encode('UTF-8', $tweet->{text}, Encode::FB_QUIET);
+		$tweet->{text} = decode_entities($tweet->{text});
 		return $tweet;
 	}
 	
