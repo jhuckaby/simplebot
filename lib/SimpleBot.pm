@@ -291,6 +291,16 @@ sub said {
 				my ($cmd, $value) = ($1, $2);
 				$cmd = lc($cmd);
 				$value = trim($value);
+				
+				if (!$self->{_eb_commands}->{$cmd}) {
+					my $found = 0;
+					my $chosen_cmd = '';
+					foreach my $key (keys %{$self->{_eb_commands}}) {
+						if ($key =~ m@^$cmd@) { $found++; $chosen_cmd = $key; }
+					}
+					if ($found == 1) { $cmd = $chosen_cmd; }
+				}
+				
 				if ($self->{_eb_commands}->{$cmd}) {
 					my $plugin = $self->{_eb_commands}->{$cmd};
 					my $plugin_name = $plugin->{name};
