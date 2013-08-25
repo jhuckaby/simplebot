@@ -78,7 +78,7 @@ sub timezone {
 sub clock {
 	# show the current date/time in the user's timezone
 	my ($self, $value, $args) = @_;
-	my $username = lc($args->{who});
+	my $username = $args->{who};
 	my $chan = nch($args->{channel});
 	
 	# see if we have a timezone on file for user
@@ -97,7 +97,7 @@ sub clock {
 sub timer {
 	# countdown timer, specify duration instead of absolute date/time
 	my ($self, $value, $args) = @_;
-	my $username = lc($args->{who});
+	my $username = $args->{who};
 	my $chan = nch($args->{channel});
 	
 	$self->{data}->{channels} ||= {};
@@ -123,7 +123,7 @@ sub timer {
 			# start timer
 			my $now = time();
 			my $tz_name = $self->get_user_timezone($username);
-			if (!$tz_name) { return "$username: Cannot use timers until you set your timezone.  Try !location CITY STATE COUNTRY or !timezone Eastern"; }
+			if (!$tz_name) { return "$username: Cannot use timers until you set your timezone.  Try !help timezone"; }
 			
 			my $prev_user = '';
 			if ($countdown->{active}) {
@@ -179,7 +179,7 @@ sub timer {
 sub countdown {
 	# countdown to a particular date/time, or next calendar event
 	my ($self, $value, $args) = @_;
-	my $username = lc($args->{who});
+	my $username = $args->{who};
 	my $chan = nch($args->{channel});
 	
 	$self->{data}->{channels} ||= {};
@@ -205,7 +205,7 @@ sub countdown {
 			$raw =~ s/^(to|until)\s+//i;
 			
 			my $tz_name = $self->get_user_timezone($username);
-			if (!$tz_name) { return "$username: Cannot use countdowns until you set your timezone.  Try !location CITY STATE COUNTRY or !timezone Eastern"; }
+			if (!$tz_name) { return "$username: Cannot use countdowns until you set your timezone.  Try !help timezone"; }
 			
 			my $prev_user = '';
 			if ($countdown->{active}) {
@@ -315,7 +315,7 @@ sub get_nice_countdown_desc {
 sub alarm {
 	# set/delete/list alarms
 	my ($self, $value, $args) = @_;
-	my $username = lc($args->{who});
+	my $username = $args->{who};
 	my $chan = nch($args->{channel});
 	
 	$self->{data}->{channels} ||= {};
@@ -327,7 +327,7 @@ sub alarm {
 		my $raw = $2;
 		
 		my $tz_name = $self->get_user_timezone($username);
-		if (!$tz_name) { return "$username: Cannot add alarms until you set your timezone.  Try !location CITY STATE COUNTRY or !timezone Eastern"; } 
+		if (!$tz_name) { return "$username: Cannot add alarms until you set your timezone.  Try !help timezone"; } 
 		
 		my $alarm = $self->get_alarm_from_raw($raw, $tz_name);
 		$alarm->{username} = $username;
@@ -570,8 +570,8 @@ sub get_user_timezone {
 	my $username = shift;
 	
 	my $tz_name = '';
-	if ($self->{data}->{users} && $self->{data}->{users}->{$username}) {
-		$tz_name = $self->{data}->{users}->{$username}->{tz_name} || '';
+	if ($self->{data}->{users} && $self->{data}->{users}->{lc($username)}) {
+		$tz_name = $self->{data}->{users}->{lc($username)}->{tz_name} || '';
 	}
 	
 	return $tz_name;
