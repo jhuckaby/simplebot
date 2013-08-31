@@ -219,6 +219,7 @@ sub connected {
 	
 	eval {
 		$self->log_debug(2, "in connected()");
+		$self->invoke_all_plugins('connected');
 		
 		if ($self->{params}->{password}) {
 			$self->log_debug(3, "trying to idenify ourselves");
@@ -242,7 +243,6 @@ sub connected {
 	# reschedule tick for 1 second, not 5
 	$self->schedule_tick(1);
 	
-	$self->invoke_all_plugins('connected');
 	return undef;
 }
 
