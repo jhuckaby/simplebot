@@ -277,6 +277,12 @@ sub register {
 	return undef;
 }
 
+sub connected {
+	# Called when bot first connects, clear echo_context if set from last time
+	my $self = shift;
+	delete $self->{echo_context};
+}
+
 sub noticed {
 	# This is like said, except for notices instead of normal messages.
 	my $self = shift;
