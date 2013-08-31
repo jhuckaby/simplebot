@@ -29,6 +29,7 @@ use strict;
 use base qw( SimpleBot::Plugin );
 use Tools;
 use DateTime;
+use DateTime::TimeZone;
 
 my $wday_map = { sun => 0, mon => 1, tue => 2, wed => 3, thu => 4, fri => 5, sat => 6 };
 my $wday_re = "(sunday|sun|monday|mon|tuesday|tues?|wednesday|wed|thursday|thu|thur|thurs|friday|fri|saturday|sat|sunday|sun)";
@@ -42,6 +43,9 @@ my $month_re = "(january|jan|february|feb|march|mar|april|apr|may|june|jun|july|
 sub init {
 	my $self = shift;
 	$self->register_commands('clock', 'time', 'alarm', 'countdown', 'timer', 'timezone');
+	
+	# cache local timezone for later use
+	$self->{local_tz} = DateTime::TimeZone->new( name => 'local' );
 }
 
 sub handler {
@@ -122,8 +126,8 @@ sub timer {
 		else {
 			# start timer
 			my $now = time();
-			my $tz_name = $self->get_user_timezone($username);
-			if (!$tz_name) { return "$username: Cannot use timers until you set your timezone.  Try !help timezone"; }
+			my $tz_name = $self->get_user_timezone($username) || 'local';
+			# if (!$tz_name) { return "$username: Cannot use timers until you set your timezone.  Try !help timezone"; }
 			
 			my $prev_user = '';
 			if ($countdown->{active}) {
@@ -204,8 +208,8 @@ sub countdown {
 		else {
 			$raw =~ s/^(to|until)\s+//i;
 			
-			my $tz_name = $self->get_user_timezone($username);
-			if (!$tz_name) { return "$username: Cannot use countdowns until you set your timezone.  Try !help timezone"; }
+			my $tz_name = $self->get_user_timezone($username) || 'local';
+			# if (!$tz_name) { return "$username: Cannot use countdowns until you set your timezone.  Try !help timezone"; }
 			
 			my $prev_user = '';
 			if ($countdown->{active}) {
