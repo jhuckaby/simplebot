@@ -65,7 +65,7 @@ sub award {
 		}
 		$self->dirty(1);
 		
-		$self->emote(
+		$self->say(
 			channel => nch($chan), 
 			body => ($action eq 'award') ?
 				"$username awarded $amount points to $target_nick!  Yay!" :
@@ -114,9 +114,23 @@ sub scores {
 		$body .= "$idx. $target_nick: $points points\n";
 		$idx++; if ($idx > $max) { last; }
 	}
-	$self->emote( channel => nch($chan), body => $body );
+	$self->say( channel => nch($chan), body => $body );
 	
 	return undef;
+}
+
+sub nick_change {
+	# called when a user nick changes
+	my ($self, $args) = @_;
+	
+	my $users = $self->{data}->{users} ||= {};
+	
+	if ($users->{ lc($args->{old_nick}) } && !$users->{ lc($args->{new_nick}) }) {
+		my $points = $users->{ lc($args->{old_nick}) };
+		delete $users->{ lc($args->{old_nick}) };
+		$users->{ lc($args->{new_nick}) } = $points;
+		$self->dirty(1);
+	}
 }
 
 1;
