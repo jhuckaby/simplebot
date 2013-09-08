@@ -3,7 +3,7 @@
 	<Version>1.0</Version>
 	
 	<Intros>
-		is a, is nothing but a, is worse than a, is like a, is akin to a
+		is a, is nothing but a, is worse than a, is like a, is akin to a, looks like a, smells like a
 	</Intros>
 	<Adjectives>
 		acidic antique contemptible culturally-unsound despicable evil fermented
@@ -19,21 +19,174 @@
 		half-faced headless wayward rump-fed onion-eyed beslubbering villainous
 		lewd-minded cockered full-gorged rude-snouted crook-pated pribbling
 		dread-bolted fool-born puny fawning sheep-biting dankish goatish
-		weather-bitten knotty-pated malt-wormy saucyspleened motley-mind
+		weather-bitten knotty-pated malt-wormy saucy-spleened motley-mind
 		it-fowling vassal-willed loggerheaded clapper-clawed frothy ruttish
 		clouted common-kissing pignutted folly-fallen plume-plucked flap-mouthed
 		swag-bellied dizzy-eyed gorbellied weedy reeky measled spur-galled mangled
-		impertinent bootless toad-spotted hasty-witted horn-beat yeasty
+		impertinent bootless toad-spotted hasty-witted yeasty
 		imp-bladdereddle-headed boil-brained tottering hedge-born hugger-muggered 
 		elf-skinned
 		used heavy cheap rigid soft collapsed fat slow mean sad small huge stretched mediocre nasty erupting painful severed weathered tortured sliced diced alcoholic aged lazy savage smelly moldy old discarded abandoned disliked disproportioned granulated pureed ruptured wretched drunk hungover lame disemboweled disenchanted fraudulent ripped torn homeless shredded gangly amputated putrid disowned disingenuous soured twisted skewered toasted estranged meaningless soggy obese cancerous infected uncultured freeloading artless errant infectious spleeny venomed beetle-headed clay-brained fat-kidneyed slack-jawed ill-nurtured plague-ridden rough-hewn dimwitted
+		
+abysmal 
+alarming
+angry
+annoying
+anxious
+appalling
+atrocious
+awful
+bad
+barbed
+belligerent
+boring
+broken
+callous
+clumsy
+coarse
+cold
+cold-hearted
+confused
+corrosive
+corrupt
+crazy
+creepy
+cruel
+dead
+decaying
+damaged
+damaging
+dastardly
+deplorable
+depressed
+deprived
+deformed
+despicable
+detrimental
+dirty
+diseased
+disgusting
+disheveled
+dishonest
+dishonorable
+dismal
+dreadful
+dreary
+eroding
+evil
+faulty
+feeble
+filthy
+foul
+frightful
+gawky
+ghastly
+gross
+grotesque
+gruesome
+haggard
+hard-hearted
+harmful
+hideous
+horrendous
+horrible
+hostile
+icky
+ignorant
+ill
+immature
+inane
+inelegant
+infernal
+injurious
+insane
+insidious
+insipid
+junky
+lousy
+lumpy
+malicious
+mean
+menacing
+messy
+misshapen
+moldy
+monstrous
+nasty
+naughty
+negative
+nonsensical
+noxious
+objectionable
+odious
+offensive
+old
+oppressive
+pessimistic
+petty
+plain
+poisonous
+poor
+prejudice
+quirky
+repulsive
+repugnant
+revolting
+rotten
+rude
+sad
+savage
+shoddy
+shocking
+sick
+sickening
+sinister
+slimy
+smelly
+sorry
+spiteful
+sticky
+stinky
+stupid
+substandard
+suspicious
+terrible
+terrifying
+ugly
+undermining
+unfair
+unfavorable
+unhappy
+unhealthy
+unjust
+unlucky
+unpleasant
+unsatisfactory
+unsightly
+untoward
+unwanted
+unwelcome
+unwholesome
+unwieldy
+unwise
+vicious
+vile
+villainous
+wicked
+woeful
+worthless
+yucky
+grunchy
+grimy
+crusty
 	</Adjectives>
 	<Amounts>
 		accumulation bucket coagulation enema-bucketful gob half-mouthful
 		heap mass mound petrification pile puddle stack thimbleful tongueful
 		ooze quart bag plate assload ocean lake river box truckload cheekful buildup sack
+		set collection quantity petri-dish egg-sack body bunch
 	</Amounts>
-	<Nouns>
+	<PluralThings>
 		bat|toenails bug|spit cat|hair chicken|piss dog|vomit dung
 		fat-woman's|stomach-bile fish|heads guano gunk pond|scum rat|retch
 		waffle-house|grits yoo-hoo Windows|install|disks
@@ -41,9 +194,75 @@
 		squirrel|guts snake|assholes snake|bait buzzard|gizzards
 		cat-hair-balls rat-farts pods armadillo|snouts entrails
 		snake|snot eel|ooze slurpee-backwash toxic|waste Stimpy-drool
-		poopy poop carpet|droppings jizzum cold|sores anal|warts
+		poop carpet|droppings cold|sores anal|warts
 		zits pimples giraffe|intestines goat|spleens kitten|livers dead|swines miscreants maggot-pies joltheads horn-beasts hedge-pigs gudgeons foot-lickers flax-wenches canker-blossoms boar-pigs pig-dogs bladders barnacles trainwrecks wet|blankets
-	</Nouns>
+		excrement snot earwax intestines diarrhea 
+		
+		underbelly|tumors
+		butt|flaps
+		sweaty|crotch|pimples
+		beef|blankets
+		beefy|pimplets
+		egg|farts
+		white|curds
+		bean|curds
+		fat|cubes
+		McVomit
+		beef|burps
+		puke|bubbles
+		membranes
+		umblicial|cords
+		feet|jams
+		toe|jams
+		armpits
+		throat|acid
+		belly|buttons
+		dog|urine
+		dog|grease
+		dandruff
+		sewage
+		bird|eggs
+		juicy|tumors
+		tumor|blankets
+		lint|turds
+		hairballs
+		boogers
+		crusty|turds
+		fat|nuggets
+		garbage|cans
+		rotten|eggs
+		raw|sewage
+		vomit|breath
+		toad|juice
+		bug|squirts
+		bug|mash
+		tumor|juices
+		hair|grease
+		face|grease
+		whiteheads
+		blackheads
+		bloody|zits
+		dry|turds
+		dirty|nails
+		barf|blankets
+		barf|spray
+		bile
+		boil
+		bull|poop
+		goose|pimples
+		oozing|pimples
+		sweaty|pimple|juice
+		popped|pimples
+		pimple|squirts
+		beefy|pimples
+		deoderant|sweat
+	</PluralThings>
+	<SingleThings>
+		zit pimple wart growth blood|clot turd wastebasket urinal snake mosquito pig swine bladder flatulence bacteria hemorrhoid fungus germ airhead deadbeat donkey dope dork dweeb flake floosie freak fruitcake gasbag geezer hick honky jerk loudmouth louse nut prat psycho rat redneck scum scumbag sicko smart-ass toff tool twerp twit wanker wimp yob yokel dipstick ding-dong dingleberry dingus doofus half-wit jerk hoser knucklehead lob lug lunkhead monkey pansy patsy porker pud sap scab schmuck tossbag tosspot turkey wack wacko windbag moron imbecile idiot
+		
+		apple-john barnacle boar-pig bugbear bum-bailey canker-blossom clack-dish clotpole coxcomb codpiece death-token dewberry flap-dragon flax-wench flirt-gill foot-licker fustilarian giglet gudgeon haggard harpy hedge-pig horn-beast joithead lewdster lout maggot-pie malt-worm mammet measle minnow miscreant moldwarp nut-hook pigeon-egg pignut puttock pumpion ratsbane scut skainsmate strumpet varlot vassal whey-face wagtail
+		backwash
+	</SingleThings>
 	
 	<Access>
 		<Default>voice</Default>
@@ -56,7 +275,11 @@ INSULT - Insult a user.
 		<Detail>
 			<insult>
 INSULT nickname
-Generates a random insult and throws it at the target user.  The insult database was borrowed and modified from the Perl Acme-Scurvy-Whoreson-BilgeRat-Backend-insultserver module: http://search.cpan.org/dist/Acme-Scurvy-Whoreson-BilgeRat-Backend-insultserver/
+INSULT nickname adjective
+INSULT nickname adjective noun.
+-
+Generates a random insult and throws it at the target user.  You may specify replacement adjectives and/or a replacement noun if you like.  Specify which is which by adding punctuation to the noun only.
+The insult database was borrowed and modified from the Perl Acme-Scurvy-Whoreson-BilgeRat-Backend-insultserver module: http://search.cpan.org/dist/Acme-Scurvy-Whoreson-BilgeRat-Backend-insultserver/
 			</insult>
 		</Detail>
 	</Help>
