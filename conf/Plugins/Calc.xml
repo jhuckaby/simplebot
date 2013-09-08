@@ -4,12 +4,17 @@
 	
 	<Access>
 		<Default>voice</Default>
+		<pick>op</pick>
 	</Access>
 	
 	<Help>
 		<Brief>
-CALC - Performs simple math calculations.
-CONVERT - Converts values between many known units (i.e. temp, weight, volume).
+CALC - Perform simple math calculations.
+CONVERT - Convert values between many known units (i.e. temp, weight, volume).
+RAND - Generate a random number given a maximum or range.
+ROLL - Roll dice for use in Roll Playing Games, such as Dungeons &amp; Dragons.
+HASH - Generate MD5 hash of string, or a random source.
+PICK - Pick a random user from the channel, and notify them.
 		</Brief>
 		<Detail>
 			<calc>
@@ -31,6 +36,34 @@ This command converts numerical values between various units, such as temperatur
 !convert 1 gallon to cm^3
 !convert 4500 rpm to hz
 			</convert>
+			<rand>
+RAND
+RAND max
+RAND min - max
+-
+This command picks a random number, and emits the result.  Without any parameters, it picks a floating point decimal between 0.0 and 1.0.  With one number specified, it is treated as the maximum, and picks a number between 0 and it.  With two numbers specified, they are treated as a range.  Will round down to nearest integer if only integers are provided, otherwise it will use floats.  Uses an ultra-random number generator.
+			</rand>
+			<roll>
+ROLL dice
+ROLL dice +/- modifier
+-
+This command rolls dice for use in RPGs like Dungeons &amp; Dragons.  It can roll any number of any-sided die, plus or minus a modifier.  The syntax for the dice is (NUM)d(SIDES), and the optional modifier is simply +/-(NUMBER).  Uses an ultra-random number generator.  Examples:
+-
+!roll 1d6
+!roll 2d20
+!roll 1d100 +20
+			</roll>
+			<hash>
+HASH
+HASH string
+-
+This command computes an MD5 digest (hash) given a source string, or creates a random one if nothing is provided.  The output is 32-characters in length, lower-case, and hexadecimal encoded.
+			</hash>
+			<pick>
+PICK
+-
+This command picks a random user from the current channel.  All nicks that end in "bot" or "serv" are excluded, as well as the bot itself (even if its name doesn't end in "bot").  The idea is to pick humans only.  The chosen user's nickname is emitted to the channel.  Uses an ultra-random number generator.
+			</pick>
 		</Detail>
 	</Help>
 </PluginConfig>
