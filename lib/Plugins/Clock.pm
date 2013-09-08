@@ -60,6 +60,7 @@ sub timezone {
 	my ($self, $value, $args) = @_;
 	my $username = $args->{who};
 	
+	$value =~ s/^set\s+//i;
 	if (!$value) { return "$username: You must specify your timezone for me to remember it."; }
 	
 	my $tz_name = find_timezone_name( $value );
@@ -330,8 +331,8 @@ sub alarm {
 		# set a new alarm
 		my $raw = $2;
 		
-		my $tz_name = $self->get_user_timezone($username);
-		if (!$tz_name) { return "$username: Cannot add alarms until you set your timezone.  Try !help timezone"; } 
+		my $tz_name = $self->get_user_timezone($username) || 'local';
+		# if (!$tz_name) { return "$username: Cannot add alarms until you set your timezone.  Try !help timezone"; } 
 		
 		my $alarm = $self->get_alarm_from_raw($raw, $tz_name);
 		$alarm->{username} = $username;
@@ -361,7 +362,7 @@ sub alarm {
 		return "$username: Alarm set for: $nice_desc";
 	} # set
 	
-	elsif ($value =~ /^(delete|del|remove|rem|cancel|abort|stop|off)\s+(.+)$/i) {
+	elsif ($value =~ /^(delete|del|remove|rem|cancel|abort|stop|off|end)\s+(.+)$/i) {
 		my $which = $2;
 		if (!scalar keys %$alarms) {
 			if ($chan eq '#msg') { return "There are no private alarms set."; }
