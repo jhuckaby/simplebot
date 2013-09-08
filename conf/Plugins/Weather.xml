@@ -5,6 +5,9 @@
 	<!-- API Key for free.worldweatheronline.com -->
 	<APIKey></APIKey>
 	
+	<DegreeUnits>C (F)</DegreeUnits>
+	<WindSpeedUnits>K (M)</WindSpeedUnits>
+	
 	<Access>
 		<Default>voice</Default>
 	</Access>
