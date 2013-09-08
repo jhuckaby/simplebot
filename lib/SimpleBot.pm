@@ -314,7 +314,7 @@ sub said {
 						}
 					} # user has access
 					else {
-						$self->log_debug(4, "Access Denied: ".$args->{who}." does not have ".$self->{_eb_data}->{plugin_access}->{$cmd}." access for $plugin_name/$cmd in " . $args->{channel});
+						$response = "Access Denied: ".$args->{who}." does not have ".$self->{_eb_data}->{plugin_access}->{$cmd}." access for $plugin_name/$cmd in " . $args->{channel};
 					}
 				} # plugin owns command!
 			} # got cmd and value
@@ -394,7 +394,7 @@ sub got_names {
 	
 		if ($args->{names} && ref($args->{names})) {
 			
-			my $channel = $self->{_eb_channels}->{ sch(lc($args->{channel})) } = {};
+			my $channel = $self->{_eb_channels}->{ sch(lc($args->{channel})) } ||= {};
 			foreach my $username (keys %{$args->{names}}) {
 				$channel->{ lc($username) } = $username;
 			}
@@ -550,7 +550,7 @@ sub tick {
 		} # mod date changed
 		
 		# also check for daily maint here
-		my $day_code = yyyy_mm_dd();
+		my $day_code = yyyy_mm_dd( time() );
 		if (!$self->{_eb_data}->{LastMaint} || ($day_code ne $self->{_eb_data}->{LastMaint})) {
 			$self->run_daily_maintenance();
 			
