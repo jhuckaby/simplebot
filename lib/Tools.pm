@@ -11,7 +11,7 @@ $VERSION = sprintf("%s", q$Revision: 1.4 $ =~ /([\d\.]+)/);
 
 use strict;
 use Config;
-use Digest::MD5 qw(md5_hex);
+use Digest::MD5 qw(md5_hex md5);
 use FileHandle;
 use File::Basename;
 use Cwd qw/cwd abs_path/;
@@ -26,6 +26,7 @@ use URI::Escape;
 use Socket;
 use Data::Dumper;
 use UNIVERSAL qw(isa);
+use POSIX qw/fmod/;
 use JSON;
 
 use DateTime;
@@ -68,7 +69,7 @@ BEGIN
     use vars qw(@ISA @EXPORT @EXPORT_OK);
 
     @ISA		= qw(Exporter);
-    @EXPORT		= qw(XMLalwaysarray load_file save_file save_file_atomic get_hostname get_bytes_from_text get_text_from_bytes short_float commify pct pluralize alphanum ascii_table file_copy file_move generate_unique_id memory_substitute memory_lookup find_files ipv4_to_hostname hostname_to_ipv4 wget xml_to_javascript escape_js normalize_midnight yyyy_mm_dd mm_dd_yyyy yyyy get_nice_date follow_symlinks get_remote_ip get_user_agent strip_high merge_hashes xml_post parse_query compose_query parse_xml compose_xml decode_entities encode_entities encode_attrib_entities xpath_lookup db_query parse_cookies touch probably rand_array find_elem_idx dumper serialize_object deep_copy trim file_get_contents file_put_contents preg_match preg_replace make_dirs_for get_text_from_seconds get_seconds_from_text json_parse json_compose json_compose_pretty normalize_channel nch strip_channel sch find_timezone_name normalize_space find_bin get_english_list);
+    @EXPORT		= qw(XMLalwaysarray load_file save_file save_file_atomic get_hostname get_bytes_from_text get_text_from_bytes short_float commify pct pluralize alphanum ascii_table file_copy file_move generate_unique_id memory_substitute memory_lookup find_files ipv4_to_hostname hostname_to_ipv4 wget xml_to_javascript escape_js normalize_midnight yyyy_mm_dd mm_dd_yyyy yyyy get_nice_date follow_symlinks get_remote_ip get_user_agent strip_high merge_hashes xml_post parse_query compose_query parse_xml compose_xml decode_entities encode_entities encode_attrib_entities xpath_lookup db_query parse_cookies touch probably rand_array ultra_rand find_elem_idx dumper serialize_object deep_copy trim file_get_contents file_put_contents preg_match preg_replace make_dirs_for get_text_from_seconds get_seconds_from_text json_parse json_compose json_compose_pretty normalize_channel nch strip_channel sch find_timezone_name normalize_space find_bin get_english_list);
 	@EXPORT_OK	= qw();
 }
 
@@ -140,7 +141,9 @@ sub save_file {
 	if (defined($fh)) {
 		$fh->print( $contents );
 		$fh->close();
+		return 1;
 	}
+	return 0;
 }
 
 sub save_file_atomic {
@@ -980,6 +983,28 @@ sub rand_array {
 	return $array->[ int(rand(scalar @$array)) ];
 }
 
+sub ultra_rand {
+	# Joe's own random number generator, try to be better than built-in rand()
+	# Limited to 32-bit for now, just in case Perl wasn't compiled with 64-bit.
+	# Author: Joseph Huckaby, (c) 2013, MIT Licensed.
+	my $max = shift || 1.0;
+	my $salt = time() . $$ . rand(1);
+	
+	if (-e '/dev/random') {
+		my $rand_fh = FileHandle->new("</dev/random");
+		my $buffer = undef;
+		$rand_fh->read( $buffer, 32 );
+		if ($buffer) { $salt .= $buffer; }
+	}
+	
+	my $md5 = md5($salt);
+	my $a = unpack('L', substr($md5, 0, 4));
+	my $b = unpack('L', substr($md5, 4, 4));
+	my $value = $a + ($b / (2 ** 31));
+	
+	return fmod($value, $max);
+}
+
 sub find_elem_idx {
 	##
 	# Locate element inside of arrayref by value
@@ -1344,7 +1369,7 @@ sub json_compose {
 }
 
 sub json_compose_pretty {
-	return to_json( $_[0], { pretty => 1 } );
+	return to_json( $_[0], { pretty => 1, utf8 => 1 } );
 }
 
 sub normalize_channel {
