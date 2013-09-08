@@ -57,6 +57,9 @@ sub award {
 		if (!$eb_channel->{lc($target_nick)} && !$force) {
 			return "$username: Cannot give points to unknown nick '$target_nick' (unless you use force).";
 		}
+		if ((lc($target_nick) eq lc($username)) && ($amount > 0) && !$force) {
+			return "$username: You cannot give points to yourself, cheater.";
+		}
 		
 		$self->{data}->{users} ||= {};
 		$self->{data}->{users}->{ lc($target_nick) } += int($amount);
@@ -95,6 +98,11 @@ sub scores {
 	my ($self, $max, $args) = @_;
 	my $username = $args->{who};
 	my $chan = $args->{channel};
+	
+	if ($max =~ /^(\w+)\s+(\+|\-)?(\d+)(.*)$/) {
+		my ($target_nick, $direction, $amount, $after) = ($1, $2, $3, $4);
+		return $self->award( "$target_nick $amount $after", $args );
+	}
 	
 	my $users = $self->{data}->{users} ||= {};
 	if (!scalar keys %$users) { return "$username: No points have been awarded."; }
