@@ -93,7 +93,7 @@ sub owner {
 	my ($self, $value, $args) = @_;
 	my $response = undef;
 	
-	if ($value =~ /^add\s+(\w+)$/i) {
+	if ($value =~ /^add\s+(\S+)$/i) {
 		my $username = lc($1);
 		if (!$self->{bot}->{_eb_data}->{owners}->{$username}) {
 			$self->{bot}->{_eb_data}->{owners}->{$username} = 1;
@@ -102,8 +102,8 @@ sub owner {
 		}
 		else { $response = "User '$username' is already a bot owner."; }
 	}
-	elsif ($value =~ /remove\s+(\w+)$/i) {
-		my $username = lc($1);
+	elsif ($value =~ /(remove|delete|rem|del)\s+(\S+)$/i) {
+		my $username = lc($2);
 		if ($self->{bot}->{_eb_data}->{owners}->{$username}) {
 			delete $self->{bot}->{_eb_data}->{owners}->{$username};
 			$self->dirty(1);
@@ -203,6 +203,7 @@ sub nick {
 	$self->irc_cmd( 'nick', $new_nick );
 	
 	$self->{bot}->{params}->{nick} = $new_nick;
+	$self->{bot}->{nick} = $new_nick;
 	$self->{bot}->save_config();
 	
 	return undef;
