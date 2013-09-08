@@ -144,10 +144,26 @@ sub weather {
 								foreach my $day (@{$data->{weather}}) {
 									my $epoch = str2time( $day->{date} );
 									$response .= get_nice_date($epoch) . ": " . $day->{weatherDesc}->[0]->{value};
-									$response .= ", High: " . $day->{tempMaxC} . "C (" . $day->{tempMaxF} . "F)";
-									$response .= ", Low: " . $day->{tempMinC} . "C (" . $day->{tempMinF} . "F)";
+									
+									$response .= ", High: " . $self->getFormattedTemperature(
+										C => $day->{tempMaxC} . 'C',
+										F => $day->{tempMaxF} . 'F'
+									);
+									$response .= ", Low: " . $self->getFormattedTemperature(
+										C => $day->{tempMinC} . 'C',
+										F => $day->{tempMinF} . 'F'
+									);
+									
+									# $response .= ", High: " . $day->{tempMaxC} . "C (" . $day->{tempMaxF} . "F)";
+									# $response .= ", Low: " . $day->{tempMinC} . "C (" . $day->{tempMinF} . "F)";
+									
 									if ($day->{windspeedMiles}) {
-										$response .= ", Wind: " . $day->{winddir16Point} . " @ " . $day->{windspeedKmph} . " km/h (" . $day->{windspeedMiles} . " mph)";
+										$response .= ", Wind: " . $day->{winddir16Point} . " @ " . $self->getFormattedSpeed(
+											K => $day->{windspeedKmph} . ' km/h',
+											M => $day->{windspeedMiles} . ' mph'
+										);
+										
+										# $response .= ", Wind: " . $day->{winddir16Point} . " @ " . $day->{windspeedKmph} . " km/h (" . $day->{windspeedMiles} . " mph)";
 									}
 									else { $response .= ", Wind: None"; }
 									$response .= "\n";
@@ -160,9 +176,19 @@ sub weather {
 							if ($cur) {
 								$response = "Current conditions for " . $data->{request}->[0]->{query} . ": ";
 								$response .= $cur->{weatherDesc}->[0]->{value};
-								$response .= ", " . $cur->{temp_C} . 'C (' . $cur->{temp_F} . 'F)';
+								
+								$response .= ", " . $self->getFormattedTemperature(
+									C => $cur->{temp_C} . 'C',
+									F => $cur->{temp_F} . 'F'
+								);
+								# $response .= ", " . $cur->{temp_C} . 'C (' . $cur->{temp_F} . 'F)';
+								
 								if ($cur->{windspeedMiles}) {
-									$response .= ", Wind: " . $cur->{winddir16Point} . " @ " . $cur->{windspeedKmph} . " km/h (" . $cur->{windspeedMiles} . " mph)";
+									$response .= ", Wind: " . $cur->{winddir16Point} . " @ " . $self->getFormattedSpeed(
+										K => $cur->{windspeedKmph} . ' km/h',
+										M => $cur->{windspeedMiles} . ' mph'
+									);
+									# $response .= ", Wind: " . $cur->{winddir16Point} . " @ " . $cur->{windspeedKmph} . " km/h (" . $cur->{windspeedMiles} . " mph)";
 								}
 								else { $response .= ", Wind: None"; }
 								$response .= ", Humidity: " . $cur->{humidity} . '%';
@@ -202,6 +228,24 @@ sub forecast {
 	
 	$args->{forecast} = 1;
 	return $self->weather($value, $args);
+}
+
+sub getFormattedTemperature {
+	# format temperature based on config string
+	my $self = shift;
+	my $args = {@_};
+	my $template = $self->{config}->{DegreeUnits};
+	$template =~ s/(\w+)/ $args->{$1} || ''; /eg;
+	return $template;
+}
+
+sub getFormattedSpeed {
+	# format speed based on config string
+	my $self = shift;
+	my $args = {@_};
+	my $template = $self->{config}->{WindSpeedUnits};
+	$template =~ s/(\w+)/ $args->{$1} || ''; /eg;
+	return $template;
 }
 
 1;
