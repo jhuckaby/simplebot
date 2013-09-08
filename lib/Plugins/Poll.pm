@@ -94,7 +94,7 @@ sub poll {
 			$response .= "!";
 		}
 		
-		$self->emote( channel => nch($chan), body => $response );
+		$self->say( channel => nch($chan), body => $response );
 	}
 	elsif ($cmd =~ /^close/i) {
 		# close a poll
@@ -103,7 +103,7 @@ sub poll {
 		$poll->{open} = 0;
 		$self->dirty(1);
 		
-		$self->emote( channel => nch($chan), body => "The poll is now closed.  Thanks for your votes!" );
+		$self->say( channel => nch($chan), body => "The poll is now closed.  Thanks for your votes!" );
 	}
 	elsif ($cmd =~ /^results/i) {
 		# get poll results
@@ -116,7 +116,7 @@ sub poll {
 			$body .= commify($poll->{votes}->{$vote_id}) . " ".pluralize("vote", $poll->{votes}->{$vote_id})." ";
 			$body .= "(" . pct($poll->{votes}->{$vote_id}, $poll->{total_votes}) . ")\n";
 		}
-		$self->emote( channel => nch($chan), body => $body );
+		$self->say( channel => nch($chan), body => $body );
 	}
 	elsif ($cmd =~ /^history/i) {
 		# show recent closed poll history
@@ -145,7 +145,7 @@ sub poll {
 			}
 		}
 		if (!$count) { return "$username: There have been no recent polls for this channel."; }
-		$self->emote( channel => nch($chan), body => $body );
+		$self->say( channel => nch($chan), body => $body );
 	}
 	elsif ($cmd =~ /^delete/i) {
 		# delete current poll
