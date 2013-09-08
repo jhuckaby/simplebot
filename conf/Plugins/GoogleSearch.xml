@@ -8,7 +8,8 @@
 	
 	<Help>
 		<Brief>
-GOOGLE - Perform google search and return first result.
+GOOGLE - Perform Google search and return first result.
+IMAGE - Perform Google image search and return direct URL to first result.
 DEFINE - Define term using Google's Define API.
 		</Brief>
 		<Detail>
@@ -17,6 +18,11 @@ GOOGLE search-query
 GOOGLE nickname
 This uses the Google Search API to search for a query, and returns the first result.  If a username is specified, the last thing the user said is used as the query.  The result is emitted to the current channel.
 			</google>
+			<image>
+IMAGE search-query
+IMAGE nickname
+This uses the Google Image Search API to search for an image given a text string, and returns a direct URL to the first result.  If a username is specified, the last thing the user said is used as the query.  The result is emitted to the current channel.  If you repeat the same query multiple times, it will cycle through the first 4 results.
+			</image>
 			<define>
 DEFINE term
 This uses the Google Define API to locate a suitable definition for a term.  The result is emitted to the current channel.
