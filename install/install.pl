@@ -75,6 +75,9 @@ my $first_install = (-e $config_file) ? 0 : 1;
 exec_shell( "mkdir -p $base_dir/conf", 'quiet' );
 safe_copy_dir( "$base_dir/sample_conf", "$base_dir/conf" );
 
+# but we need always clobber plugin confs
+exec_shell( "cp -R $base_dir/sample_conf/Plugins/* $base_dir/conf/Plugins/" );
+
 # init.d script (+perms)
 exec_shell( "cp $base_dir/install/simplebotd.init /etc/init.d/simplebotd" );
 exec_shell( "chmod 775 /etc/init.d/simplebotd" );
