@@ -25,10 +25,13 @@ sub help {
 		# ask for help on a specific command (plugin)
 		my $plugin = $self->{bot}->{_eb_commands}->{$cmd};
 		if ($plugin) {
-			$response = $plugin->{config}->{Help}->{Detail}->{$cmd} || "Sorry, there is no help available for command: $cmd";
+			$response = $plugin->{config}->{Help}->{Detail}->{$cmd} || '';
+			if (!$response) {
+				return "Sorry, there is no help available for command: $cmd";
+			}
 		}
 		else {
-			$response = "Unknown command: $cmd";
+			return "Unknown command: $cmd";
 		}
 	}
 	else {
