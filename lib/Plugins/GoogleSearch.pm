@@ -111,13 +111,18 @@ sub image {
 			eval {
 				my $items = $self->_google_image_search($value);
 				
-				if (!@$items) {
-					# retry once after a 1s delay (Google is weird)
-					sleep 1;
+				if (!$items) {
+					# retry once after a 2s delay (Google is weird)
+					sleep 2;
 					$items = $self->_google_image_search($value);
+					if (!$items) {
+						print "Google Error: Image Search API Rate Exceeded.  Please wait a few seconds before trying again.\n";
+						unlink $result_file;
+						return;
+					}
 				}
 				
-				if (@$items) {
+				if ($items && @$items) {
 					my $item = shift @$items;
 					print encode('UTF-8', $item->{link}, Encode::FB_QUIET) . "\n";
 					
@@ -145,6 +150,8 @@ sub _google_search {
 	my $url = 'http://www.google.com/uds/GwebSearch?callback=receive_google_search_results&context=0&lstkp=0&rsz=large&hl=en&source=gsc&gss=.com&sig=&q='.uri_escape($value).'&key=notsupplied&v=1.0';
 	$self->log_debug(9, "Fetching Google Search URL: $url");
 	my $google = file_get_contents( $url );
+	
+	$self->log_debug(9, "Raw Google Response: $google");
 	
 	my $items = [];
 	while ($google =~ s@\"titleNoFormatting\"\:"([^\"]+)\"@@) {
@@ -175,6 +182,8 @@ sub _google_image_search {
 	$self->log_debug(9, "Fetching Google Image Search URL: $url");
 	my $google = file_get_contents( $url );
 	
+	$self->log_debug(9, "Raw Google Image Response: $google");
+	
 	my $items = [];
 	while ($google =~ s@\"titleNoFormatting\"\:"([^\"]+)\"@@) {
 		my $title = $1;
@@ -188,6 +197,10 @@ sub _google_image_search {
 		$link =~ s/(\\u([0-9a-f]{4}))/ chr(hex($2)); /iesg;
 		
 		push @$items, { title => $title, link => $link };
+	}
+	
+	if (!@$items && ($google =~ /rate exceeded/)) {
+		return undef;
 	}
 	
 	return $items;
@@ -209,6 +222,8 @@ sub define {
 				my $url = 'http://www.google.com/dictionary/json?callback=dict_api.callbacks.id100&q='.uri_escape($value).'&sl=en&tl=en&restrict=pr,de&client=te';
 				$self->log_debug(9, "Fetching URL: $url");
 				my $google = file_get_contents( $url );
+				
+				$self->log_debug(9, "Raw Google Define Response: $google");
 				
 				my $meaning = '';
 				if ($google =~ m@\"meaning\"\,\"terms\"\:\[\{\"type\"\:\"text\"\,\"text\"\:\"([^\"]+)\"@) {
