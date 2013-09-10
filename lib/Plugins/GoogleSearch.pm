@@ -102,7 +102,7 @@ sub image {
 	$self->{last_image_search_query} = $value;
 	
 	$self->log_debug(9, "Forking for Google Image Search API...");
-	unlink $results_file;
+	unlink $result_file;
 	
 	$self->{bot}->forkit(
 		channel => nch( $args->{channel} ),
@@ -129,7 +129,7 @@ sub image {
 				}
 				else {
 					print "No results for: $value\n";
-					unlink $results_file;
+					unlink $result_file;
 				}
 			}; # eval
 			if ($@) { $self->log_debug(1, "CHILD CRASH google: $@"); }
