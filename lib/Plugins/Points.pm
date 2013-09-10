@@ -101,7 +101,7 @@ sub scores {
 	
 	if ($max =~ /^(\w+)\s+(\+|\-)?(\d+)(.*)$/) {
 		my ($target_nick, $direction, $amount, $after) = ($1, $2, $3, $4);
-		return $self->award( "$target_nick $amount $after", $args );
+		return $self->award( "$target_nick $direction$amount $after", $args );
 	}
 	
 	my $users = $self->{data}->{users} ||= {};
