@@ -2,16 +2,16 @@
 
 ##
 # Remote Installer script for SimpleBot 1.0
-# Copyright (c) 2012-2013 Joseph Huckaby and EffectSoftware.com
+# Copyright (c) 2012-2013 Joseph Huckaby and PixlCore.com
 # Released under the MIT License: http://opensource.org/licenses/MIT
 #
 # To install or upgrade, issue this command as root:
 #
-#	curl -s "http://effectsoftware.com/software/simplebot/install-latest-_BRANCH_.txt" | bash
+#	curl -s "http://pixlcore.com/software/simplebot/install-latest-_BRANCH_.txt" | bash
 #
 # Or, if you don't have curl, you can use wget:
 #
-#	wget -O - "http://effectsoftware.com/software/simplebot/install-latest-_BRANCH_.txt" | bash
+#	wget -O - "http://pixlcore.com/software/simplebot/install-latest-_BRANCH_.txt" | bash
 ##
 
 SIMPLEBOT_TARBALL="latest-_BRANCH_.tar.gz"
@@ -58,9 +58,9 @@ fi
 mkdir -p /opt
 cd /opt
 if which curl >/dev/null 2>&1 ; then 
-	curl -O "http://effectsoftware.com/software/simplebot/$SIMPLEBOT_TARBALL" || exit 1
+	curl -O "http://pixlcore.com/software/simplebot/$SIMPLEBOT_TARBALL" || exit 1
 else
-	wget "http://effectsoftware.com/software/simplebot/$SIMPLEBOT_TARBALL" || exit 1
+	wget "http://pixlcore.com/software/simplebot/$SIMPLEBOT_TARBALL" || exit 1
 fi
 tar zxf $SIMPLEBOT_TARBALL || exit 1
 rm -f $SIMPLEBOT_TARBALL

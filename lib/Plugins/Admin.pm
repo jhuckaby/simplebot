@@ -500,7 +500,7 @@ sub version {
 	push @$lines, 'This is SimpleBot version ' . $version->{Major} . '-' . $version->{Minor} . ' (' . $version->{Branch} . " branch, build $short_build_id)";
 	# push @$lines, "(Build ID: " . $version->{BuildID} . ")";
 	
-	my $resp = wget('http://effectsoftware.com/software/simplebot/version-'.$version->{Branch}.'.json', 5);
+	my $resp = wget('http://pixlcore.com/software/simplebot/version-'.$version->{Branch}.'.json', 5);
 	if ($resp->is_success()) {
 		my $json = eval { json_parse( $resp->content() ) };
 		if ($json && $json->{version}) {
@@ -513,11 +513,11 @@ sub version {
 			}
 		}
 		else { 
-			push @$lines, "Unable to parse version information on EffectSoftware.com: $@"; 
+			push @$lines, "Unable to parse version information on PixlCore.com: $@"; 
 		}
 	}
 	else {
-		push @$lines, "Unable to determine latest version on EffectSoftware.com: " . $resp->status_line();
+		push @$lines, "Unable to determine latest version on PixlCore.com: " . $resp->status_line();
 	}
 	
 	foreach my $line (@$lines) {
@@ -538,9 +538,9 @@ sub upgrade {
 	my $version = $self->{bot}->{version};
 	if ($branch !~ /\S/) { $branch = $version->{Branch}; }
 	
-	my $resp = wget('http://effectsoftware.com/software/simplebot/version-'.$branch.'.json', 5);
+	my $resp = wget('http://pixlcore.com/software/simplebot/version-'.$branch.'.json', 5);
 	if (!$resp->is_success()) {
-		return "Unable to determine latest $branch version on EffectSoftware.com: " . $resp->status_line();
+		return "Unable to determine latest $branch version on PixlCore.com: " . $resp->status_line();
 	}
 	
 	# make sure only one upgrade is happening at a time

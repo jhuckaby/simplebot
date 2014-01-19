@@ -3,7 +3,7 @@
 # SimpleBot Installer Phase 2
 # Invoked by install-latest-BRANCH.txt (remote-install.sh)
 # by Joseph Huckaby
-# Copyright (c) 2012-2013 EffectSoftware.com
+# Copyright (c) 2012-2013 PixlCore.com
 
 use strict;
 use FileHandle;

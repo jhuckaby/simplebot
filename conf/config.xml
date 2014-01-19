@@ -2,7 +2,7 @@
 <BotConfig>
 	<data_commit_freq>60</data_commit_freq>
 	<debug_level>9</debug_level>
-	<email>simplebot@effectsoftware.com</email>
+	<email>simplebot@pixlcore.com</email>
 	<flood>1</flood>
 	<name>SimpleBot</name>
 	<nick>simplebot</nick>

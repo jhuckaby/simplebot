@@ -3,7 +3,7 @@
 ##
 # add-owner.pl
 # SimpleBot v1.0 Command-line IRC owner add tool.
-# Copyright (c) 2013 Joseph Huckaby and EffectSoftware.com
+# Copyright (c) 2013 Joseph Huckaby and PixlCore.com
 # Released under the MIT License.
 # 
 # Usage:

@@ -130,12 +130,12 @@ This will cause the bot to disconnect and reconnect to the IRC server.
 			</restart>
 			<version>
 VERSION
-This will emit the current installed version of the SimpleBot software, as well as check EffectSoftware.com to see if there is a newer version available.
+This will emit the current installed version of the SimpleBot software, as well as check PixlCore.com to see if there is a newer version available.
 			</version>
 			<upgrade>
 UPGRADE
 UPGRADE branch
-This command upgrades the bot to the latest available version on EffectSoftware.com.  If you enter the command by itself, it upgrades to the latest version in the current branch (i.e. stable, dev, etc.).  However, you can also switch branches using the upgrade command.  Just include the branch name after the command.
+This command upgrades the bot to the latest available version on PixlCore.com.  If you enter the command by itself, it upgrades to the latest version in the current branch (i.e. stable, dev, etc.).  However, you can also switch branches using the upgrade command.  Just include the branch name after the command.
 For example, if you are on the stable branch and want to switch to the bleeding-edge development branch, type: !upgrade dev
 			</upgrade>
 		</Detail>

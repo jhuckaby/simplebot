@@ -32,11 +32,11 @@ Features at a glance:
 
 To install SimpleBot, execute this command as root on your server:
 
-    curl -s "http://effectsoftware.com/software/simplebot/install-latest-stable.txt" | bash
+    curl -s "http://pixlcore.com/software/simplebot/install-latest-stable.txt" | bash
 
 Or, if you don't have curl, you can use wget:
 
-    wget -O - "http://effectsoftware.com/software/simplebot/install-latest-stable.txt" | bash
+    wget -O - "http://pixlcore.com/software/simplebot/install-latest-stable.txt" | bash
 
 This will install the latest stable version of SimpleBot.  Change the word "stable" to "dev" to install the development branch.  This single command installer should work fine on any modern Linux RedHat (RHEL, Fedora, CentOS) or Debian (Ubuntu) operating system.  Basically, anything that has "yum" or "apt-get" should be happy.  See the manual installation instructions for other OSes, or if the single-command installer doesn't work for you.
 
@@ -44,7 +44,7 @@ After installation, you will be provided instructions for connecting to a server
 
 ## Copyright and Legal
 
-SimpleBot is copyright (c) 2013 by Joseph Huckaby and EffectSoftware.com.  It is released under the MIT License (see below).
+SimpleBot is copyright (c) 2013 by Joseph Huckaby and PixlCore.com.  It is released under the MIT License (see below).
 
 SimpleBot relies on the following non-core Perl modules, which are automatically installed, along with their prerequisites, using [cpanm](http://cpanmin.us):
 
