@@ -207,6 +207,10 @@ sub countdown {
 			return "$username: Countdown has been cancelled.";
 		}
 		else {
+			if ($raw !~ /^(to|until)\s+/) {
+				return $self->timer($value, $args);
+			}
+			
 			$raw =~ s/^(to|until)\s+//i;
 			
 			my $tz_name = $self->get_user_timezone($username) || 'local';
@@ -475,7 +479,7 @@ sub get_alarm_from_raw {
 		$alarm->{month} = $2;
 	}
 	
-	if ($alarm->{month} =~ /$month_re/) {
+	if ($alarm->{month} =~ /$month_re/i) {
 		foreach my $key (keys %$month_map) {
 			if ($alarm->{month} =~ /$key/i) {
 				$alarm->{month} = $month_map->{$key};
