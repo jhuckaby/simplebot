@@ -306,11 +306,18 @@ sub said {
 					my $plugin_name = $plugin->{name};
 					if ($self->check_user_access($args->{who}, $self->{_eb_data}->{plugin_access}->{$cmd}, $args->{channel})) {
 						$self->log_debug(6, "Calling plugin $plugin_name for cmd: $cmd ($value)");
-						if ($plugin->can($cmd)) {
-							$response = $plugin->$cmd( $value, $args );
-						}
-						else {
-							$response = $plugin->handler( $cmd, $value, $args );
+						eval {
+							if ($plugin->can($cmd)) {
+								$response = $plugin->$cmd( $value, $args );
+							}
+							else {
+								$response = $plugin->handler( $cmd, $value, $args );
+							}
+						};
+						if ($@) { 
+							$response = "Plugin $plugin_name Crashed: $@";
+							$self->log_debug(1, $response);
+							$response =~ s/\n.*$//s;
 						}
 					} # user has access
 					else {
