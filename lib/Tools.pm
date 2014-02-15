@@ -990,12 +990,13 @@ sub ultra_rand {
 	my $max = shift || 1.0;
 	my $salt = time() . $$ . rand(1);
 	
-	if (-e '/dev/random') {
-		my $rand_fh = FileHandle->new("</dev/random");
-		my $buffer = undef;
-		$rand_fh->read( $buffer, 32 );
-		if ($buffer) { $salt .= $buffer; }
-	}
+	# JH 2014-02-14 Disabling this extra entropy because it hangs on Amazon EC2 micro instances.
+	#if (-e '/dev/random') {
+	#	my $rand_fh = FileHandle->new("</dev/random");
+	#	my $buffer = undef;
+	#	$rand_fh->read( $buffer, 32 );
+	#	if ($buffer) { $salt .= $buffer; }
+	#}
 	
 	my $md5 = md5($salt);
 	my $a = unpack('L', substr($md5, 0, 4));
