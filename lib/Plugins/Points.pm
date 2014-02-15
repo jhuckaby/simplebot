@@ -133,7 +133,8 @@ sub nick_change {
 	
 	my $users = $self->{data}->{users} ||= {};
 	
-	if ($users->{ lc($args->{old_nick}) } && !$users->{ lc($args->{new_nick}) }) {
+	# JH 2014-02-15 No longer tracking users who become 'Unidentified...'
+	if ($users->{ lc($args->{old_nick}) } && !$users->{ lc($args->{new_nick}) } && ($args->{new_nick} !~ /^unidentified/i)) {
 		my $points = $users->{ lc($args->{old_nick}) };
 		delete $users->{ lc($args->{old_nick}) };
 		$users->{ lc($args->{new_nick}) } = $points;
