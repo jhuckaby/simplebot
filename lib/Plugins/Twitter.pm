@@ -26,6 +26,7 @@ sub init {
 	local $SIG{'__DIE__'} = undef;
 	
 	$self->{twitter} = Net::Twitter::Lite::WithAPIv1_1->new(
+		ssl => 1,
 		consumer_key        => $self->{config}->{ConsumerKey},
 		consumer_secret     => $self->{config}->{ConsumerSecret},
 		access_token        => $self->{config}->{AccessToken},
