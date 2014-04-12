@@ -78,7 +78,8 @@ sub weather {
 								$response = "Forecast for " . $data->{request}->[0]->{query} . ":\n";
 								foreach my $day (@{$data->{weather}}) {
 									my $epoch = str2time( $day->{date} );
-									$response .= get_nice_date($epoch) . ": " . $day->{weatherDesc}->[0]->{value};
+									my $nice_date = get_nice_date( $epoch, 0, 1 ); $nice_date =~ s/\,\s+\d{4}$//;
+									$response .= $nice_date . ": " . $day->{weatherDesc}->[0]->{value};
 									
 									$response .= ", High: " . $self->getFormattedTemperature(
 										C => $day->{tempMaxC} . 'C',
