@@ -77,6 +77,9 @@ my $months = [
 	'January', 'February', 'March', 'April', 'May', 'June', 
 	'July', 'August', 'September', 'October', 'November', 'December'
 ];
+my $days = [
+	'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+];
 
 my $entities = {
 	'amp' => '&',
@@ -616,14 +619,25 @@ sub get_nice_date {
 	##
 	my $epoch = shift;
 	my $yes_time = shift || 0;
+	my $yes_wday = shift || 0;
+	my $yes_abbrev = shift || 0;
 	my $nice = '';
-
+	
 	my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime( $epoch );
 	my $month_name = $months->[$mon];
+	my $wday_name = $days->[$wday];
 	my $yyyy = sprintf( "%0004d", $year + 1900 );
 	
+	if ($yes_abbrev) {
+		$month_name = substr($month_name, 0, 3);
+		$wday_name = substr($wday_name, 0, 3);
+	}
+	if ($yes_wday) {
+		$nice .= $wday_name . ', ';
+	}
+	
 	$nice .= "$month_name $mday, $yyyy";
-
+	
 	if ($yes_time) {
 		$nice .= ' ';
 		my $ampm = 'AM';
@@ -633,7 +647,7 @@ sub get_nice_date {
 		$sec = sprintf( "%02d", $sec );
 		$nice .= "$hour:$min:$sec $ampm";
 	}
-
+	
 	return $nice;
 }
 
