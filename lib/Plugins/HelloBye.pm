@@ -72,6 +72,9 @@ sub nick_change {
 	# called when a user nick changes
 	my ($self, $args) = @_;
 	
+	if ($args->{new_nick} =~ /^unidentified/i) { return; }
+	if ($args->{new_nick} =~ /\[.+\]/) { return; }
+	
 	if ($self->{data}->{greets} && $self->{data}->{greets}->{ $args->{old_nick} }) {
 		$self->{data}->{greets}->{ $args->{new_nick} } = $self->{data}->{greets}->{ $args->{old_nick} };
 		delete $self->{data}->{greets}->{ $args->{old_nick} };

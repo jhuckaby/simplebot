@@ -206,6 +206,9 @@ sub nick_change {
 	# called when a user nick changes
 	my ($self, $args) = @_;
 	
+	if ($args->{new_nick} =~ /^unidentified/i) { return; }
+	if ($args->{new_nick} =~ /\[.+\]/) { return; }
+	
 	if ($self->{data}->{channels}) {
 		foreach my $chan (keys %{$self->{data}->{channels}}) {
 			my $poll = $self->{data}->{channels}->{$chan};

@@ -12,6 +12,7 @@ package SimpleBot::Plugin::Points;
 ##
 
 use strict;
+use FileHandle;
 use base qw( SimpleBot::Plugin );
 use Tools;
 
@@ -45,9 +46,19 @@ sub award {
 		my ($target_nick, $amount) = ($1, $2);
 		$amount = trim($amount);
 		my $action = 'award';
-		my $force = 0;
 		
+		my $force = 0;
 		if ($amount =~ s/\s+force$//i) { $force = 1; }
+		$amount =~ s/\s+(points?|pts?)//i;
+		
+		my $reason = '';
+		if ($amount =~ s/\s+(.+)$//) {
+			$reason = trim($1); 
+			$reason =~ s/\W$//;
+			if ($reason !~ /^(for|because|bcuz|bc)\s+/i) { $reason = 'for ' . $reason; }
+			$reason = ' ' . $reason;
+		}
+		
 		if ($amount !~ /^(\+|\-)?\d+$/) { return "$username: Invalid syntax, please specify a number of points to award or deduct."; }
 		if ($amount =~ /^\-(\d+)$/) { $amount = 0 - int($1); $action = 'deduct'; }
 		if (!$amount) { return "$username: Invalid syntax, please specify a number of points to award or deduct."; }
@@ -71,9 +82,25 @@ sub award {
 		$self->say(
 			channel => nch($chan), 
 			body => ($action eq 'award') ?
-				"$username awarded $amount points to $target_nick!  Yay!" :
-				"$username deducted $amount points from $target_nick.  Ouch."
+				"$username awarded $amount points to $target_nick$reason!  Yay!" :
+				"$username deducted $amount points from $target_nick$reason.  Ouch."
 		);
+		
+		my $fh = new FileHandle ">>logs/points.log";
+		my $now = time();
+		my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($now);
+		my $nice_date = sprintf("%0004d-%02d-%02d %02d:%02d:%02d", $year + 1900, $mon + 1, $mday, $hour, $min, $sec);
+		my $line = '[' . join('][', 
+			$now,
+			$nice_date,
+			$username,
+			$action,
+			$target_nick,
+			$amount,
+			trim($reason)
+		) . "]\n";
+		$fh->print( $line );
+		$fh->close();
 	}
 	else { return "$username: Invalid syntax, please use: !award NICKNAME POINTS"; }
 	
@@ -131,13 +158,16 @@ sub nick_change {
 	# called when a user nick changes
 	my ($self, $args) = @_;
 	
+	my $old_nick = lc($args->{old_nick}); $old_nick =~ s@\[.+\]@@g;
+	my $new_nick = lc($args->{new_nick}); $new_nick =~ s@\[.+\]@@g;
+	
 	my $users = $self->{data}->{users} ||= {};
 	
 	# JH 2014-02-15 No longer tracking users who become 'Unidentified...'
-	if ($users->{ lc($args->{old_nick}) } && !$users->{ lc($args->{new_nick}) } && ($args->{new_nick} !~ /^unidentified/i)) {
-		my $points = $users->{ lc($args->{old_nick}) };
-		delete $users->{ lc($args->{old_nick}) };
-		$users->{ lc($args->{new_nick}) } = $points;
+	if ($users->{ $old_nick } && !$users->{ $new_nick } && ($new_nick !~ /^unidentified/i)) {
+		my $points = $users->{ $old_nick };
+		delete $users->{ $old_nick };
+		$users->{ $new_nick } = $points;
 		$self->dirty(1);
 	}
 }
