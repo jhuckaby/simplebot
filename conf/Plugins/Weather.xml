@@ -22,14 +22,14 @@ LOCATION - Set your default location and time zone for future queries.
 			<weather>
 WEATHER location
 -
-Get current weather conditions.  Specify any 5-digit US ZIP code, or any city and country separated by spaces.  For example, 'weather guelph canada' or 'weather toronto ca'.  Countries can be abbreviated.
+Get current weather conditions.  Specify any 5-digit US ZIP code (uses Yahoo! Weather), or any city and country separated by spaces (uses WorldWeatherOnline.com).  For example, 'weather guelph canada' or 'weather toronto ca'.  Countries can be abbreviated.
 -
-To set up the Weather Plugin for the first time, you will need to register for a free API Key at: http://developer.worldweatheronline.com/
+To get weather for countries outside the US, you will need to register for a free API Key at: http://developer.worldweatheronline.com/
 After signing up, copy your API key and paste it into this command:
 -
 !config set Weather/APIKey YOUR_API_KEY_HERE
 -
-At this point the Weather Plugin should be ready to use.  Test it out by checking your local weather: "!weather 94403".
+At this point the Weather Plugin should be ready to use.  Test it out by checking your local weather: "!weather london england".
 			</weather>
 			<forecast>
 FORECAST location
