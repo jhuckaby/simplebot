@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Version>1.0</Version>
+	
+	<APIPingFreq>60</APIPingFreq>
+	<FeedID>significant</FeedID>
+	
+	<Access>
+		<Default>voice</Default>
+	</Access>
+	
+	<Help>
+		<Brief>
+QUAKES - Report most recent earthquake from USGS, and enable live quake monitoring.
+		</Brief>
+		<Detail>
+			<quakes>
+QUAKES on
+QUAKES off
+QUAKE
+This command can enable or disable live earthquake monitoring (data provided by USGS).  The bot can emit earthquake reports into the current channel, within 60 seconds of the event happening.  Type "!quakes on" to enable live monitoring and "!quakes off" to disable it.  You can also type "!quake" to emit the most recent quake reported in the last 24 hours.
+The USGS provides five different earthquake feeds, which vary on their minimum magnitude.  To set which feed to pull from, use this command:
+-
+!config set Earthquake/FeedID significant
+-
+Acceptable values for FeedID are "significant", "4.5", "2.5", "1.0" or "all".
+			</quakes>
+		</Detail>
+	</Help>
+</PluginConfig>
