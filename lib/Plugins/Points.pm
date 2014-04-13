@@ -61,29 +61,51 @@ sub award {
 		
 		if ($amount !~ /^(\+|\-)?\d+$/) { return "$username: Invalid syntax, please specify a number of points to award or deduct."; }
 		if ($amount =~ /^\-(\d+)$/) { $amount = 0 - int($1); $action = 'deduct'; }
-		if (!$amount) { return "$username: Invalid syntax, please specify a number of points to award or deduct."; }
+		if (!$amount) { return "$username: Nothing giveth, nothing taketh away."; }
+		
+		# setup user list
+		$self->{data}->{users} ||= {};
+		my $users = $self->{data}->{users};
 		
 		# validate nick
 		my $eb_channel = $self->{bot}->{_eb_channels}->{ sch(lc($chan)) } || {};
-		if (!$eb_channel->{lc($target_nick)} && !$force) {
+		if (!$eb_channel->{lc($target_nick)} && !$users->{lc($target_nick)} && !$force) {
 			return "$username: Cannot give points to unknown nick '$target_nick' (unless you use force).";
 		}
 		if ((lc($target_nick) eq lc($username)) && ($amount > 0) && !$force) {
 			return "$username: You cannot give points to yourself, cheater.";
 		}
+				
+		# find old rank
+		my $old_user_rank = $self->find_rank( lc($target_nick) );
 		
-		$self->{data}->{users} ||= {};
-		$self->{data}->{users}->{ lc($target_nick) } += int($amount);
-		if ($self->{data}->{users}->{ lc($target_nick) } < 1) {
-			delete $self->{data}->{users}->{ lc($target_nick) };
+		# make change
+		$users->{ lc($target_nick) } += int($amount);
+		if ($users->{ lc($target_nick) } < 1) {
+			delete $users->{ lc($target_nick) };
 		}
 		$self->dirty(1);
+		
+		my $abs_amount = $amount; $abs_amount =~ s/\D+//g;
+		my $new_user_total = $users->{ lc($target_nick) };
+		
+		# find new rank
+		my $new_user_rank = $self->find_rank( lc($target_nick) );
+		
+		# compose extra text
+		my $extra = "  Their new score is $new_user_total points.";
+		if ($new_user_rank < $old_user_rank) {
+			$extra .= "  This bumps them up to rank \#$new_user_rank.";
+		}
+		elsif ($new_user_rank > $old_user_rank) {
+			$extra .= "  This brings them down to rank \#$new_user_rank.";
+		}
 		
 		$self->say(
 			channel => nch($chan), 
 			body => ($action eq 'award') ?
-				"$username awarded $amount points to $target_nick$reason!  Yay!" :
-				"$username deducted $amount points from $target_nick$reason.  Ouch."
+				"$username awarded $amount points to $target_nick$reason.$extra" :
+				"$username deducted $abs_amount points from $target_nick$reason.$extra"
 		);
 		
 		my $fh = new FileHandle ">>logs/points.log";
@@ -170,6 +192,20 @@ sub nick_change {
 		$users->{ $new_nick } = $points;
 		$self->dirty(1);
 	}
+}
+
+sub find_rank {
+	# find score rank given username
+	my ($self, $nick) = @_;
+	my $users = $self->{data}->{users} ||= {};
+	
+	my $idx = 1;
+	foreach my $target_nick (reverse sort { $users->{$a} <=> $users->{$b} } keys %$users) {
+		if (lc($target_nick) eq lc($nick)) { return $idx; }
+		$idx++;
+	}
+	
+	return $idx;
 }
 
 1;
