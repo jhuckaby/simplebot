@@ -2,6 +2,9 @@
 <PluginConfig>
 	<Version>1.0</Version>
 	
+	<!-- API Key for dictionaryapi.com -->
+	<DictAPIKey></DictAPIKey>
+	
 	<Access>
 		<Default>voice</Default>
 	</Access>
@@ -25,7 +28,11 @@ This uses the Google Image Search API to search for an image given a text string
 			</image>
 			<define>
 DEFINE term
-This uses the Google Define API to locate a suitable definition for a term.  The result is emitted to the current channel.
+This uses the Wikipedia API to locate a suitable definition for a term.  The result is emitted to the current channel.  If a definition cannot be found, the bot also tries DictionaryAPI.com (Merriam-Webster), which requires a free API key.  Sign up at http://www.dictionaryapi.com/ and then configure your API key with this command:
+-
+!config set WebSearch/DictAPIKey YOUR_API_KEY_HERE
+-
+Note that this is optional, and the DEFINE command works just fine with Wikipedia for most terms.  The DictionaryAPI.com is mainly used as a fallback, if the Wikipedia API fails or it doesn't include a particular word.
 			</define>
 		</Detail>
 	</Help>

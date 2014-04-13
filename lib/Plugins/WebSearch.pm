@@ -1,7 +1,7 @@
-package SimpleBot::Plugin::GoogleSearch;
+package SimpleBot::Plugin::WebSearch;
 
 ##
-# Google.pm
+# WebSearch.pm
 # SimpleBot Plugin
 # Copyright (c) 2013 Joseph Huckaby
 # MIT Licensed
@@ -49,7 +49,8 @@ sub google {
 				my $items = $self->_google_search($value);
 				if (@$items) {
 					my $item = shift @$items;
-					print "$prefix: " . encode('UTF-8', $item, Encode::FB_QUIET) . "\n";
+					my $text = $item->{title} . ": " . $item->{link};
+					print "$prefix: " . encode('UTF-8', $text, Encode::FB_QUIET) . "\n";
 					
 					# my $result_queue_file = 'data/' . $self->{params}->{server} . '/result-queue-' . sch($args->{channel}) . '.txt';
 					# save_file( $result_queue_file, join("\n", map { 'Google Result: ' . $_; } @$items) . "\n" );
@@ -165,7 +166,7 @@ sub _google_search {
 		my $link = $1;
 		$link =~ s/(\\u([0-9a-f]{4}))/ chr(hex($2)); /iesg;
 		
-		push @$items, "$title: $link";
+		push @$items, { title => $title, link => $link };
 	}
 	
 	return $items;
@@ -212,37 +213,85 @@ sub define {
 	
 	return unless $value;
 	
-	$self->log_debug(9, "Forking for Google Define API...");
+	$self->log_debug(9, "Forking for Define APIs...");
 	
 	$self->{bot}->forkit(
 		channel => nch( $args->{channel} ),
 		handler => '_fork_utf8_said',
 		run => sub {
 			eval {
-				my $url = 'http://www.google.com/dictionary/json?callback=dict_api.callbacks.id100&q='.uri_escape($value).'&sl=en&tl=en&restrict=pr,de&client=te';
-				$self->log_debug(9, "Fetching URL: $url");
-				my $google = file_get_contents( $url );
+				my $response = '';
 				
-				$self->log_debug(9, "Raw Google Define Response: $google");
+				if (!$response) {
+					# Try google to get exact wikipedia article name (case sensitive)
+					my $items = $self->_google_search($value . " site:wikipedia.org");
+					if ($items && $items->[0] && ($items->[0]->{link} =~ m@wikipedia.org/wiki/(.+)$@)) {
+						my $wiki_article_title = uri_unescape($1);
+						my $wiki_url = $items->[0]->{link};
+						
+						my $url = 'http://en.wikipedia.org/w/api.php?format=json&action=query&titles='.uri_escape($wiki_article_title).'&prop=extracts&exchars=512&exsectionformat=plain&explaintext=1';
+						$self->log_debug(9, "Fetching URL: $url");
+						my $wiki_raw = file_get_contents( $url );
+						my $wiki_json = eval { json_parse( $wiki_raw ); };
+						
+						if ($wiki_json && $wiki_json->{query}->{pages}) {
+							my $page_key = first_key( $wiki_json->{query}->{pages} );
+							if ($wiki_json->{query}->{pages}->{$page_key}->{extract}) {
+								my $extract = $wiki_json->{query}->{pages}->{$page_key}->{extract};
+								my $nice_title = $wiki_article_title; $nice_title =~ s/_/ /g;
+								
+								# only prefix with title if extract doesn't already start with it
+								my $nice_title_esc = $nice_title; $nice_title_esc =~ s/(\W)/\\$1/g;
+								if ($extract !~ /^$nice_title_esc/) {
+									$response .= "$nice_title: ";
+								}
+								
+								# add extract
+								$response .= "$extract";
+								
+								# only one sentence needed
+								my $new_response = '';
+								foreach my $sentence (split(/\.\s*/, $response)) {
+									$new_response .= $sentence . ". ";
+									last if (length($new_response) >= 50);
+								}
+								$response = trim($new_response);
+								
+								# squeeze URL onto end
+								if (length($response) >= 500 - length($wiki_url)) {
+									$response = substr($response, 0, 500 - length($wiki_url));
+									$response =~ s/\.+$//; $response .= "...";
+								}
+								$response .= " " . $wiki_url;
+							} # found definition
+						} # good json
+					} # first google result is a wiki
+				} # need google / wiki search
 				
-				my $meaning = '';
-				if ($google =~ m@\"meaning\"\,\"terms\"\:\[\{\"type\"\:\"text\"\,\"text\"\:\"([^\"]+)\"@) {
-					$meaning = $1;
-					$meaning =~ s/(\\u([0-9a-f]{4}))/ chr(hex($2)); /iesg;
-					$meaning =~ s/\\x(\w{2})/\%$1/g;
-					$meaning =~ s/\n/ /g;
-					$meaning = uri_unescape( $meaning );
-					$meaning = decode_entities( $meaning );
-					$meaning =~ s/<.+?>//sg;
+				# No response?  Try dictionaryapi.com too, if we have an API key
+				if (!$response && $self->{config}->{DictAPIKey} && ($value =~ /^\w+$/)) {
+					my $url = 'http://www.dictionaryapi.com/api/v1/references/collegiate/xml/'.lc($value).'?key=' . $self->{config}->{DictAPIKey};
+					$self->log_debug(9, "Fetching URL: $url");
+					my $dict_raw = file_get_contents( $url );
+					
+					if ($dict_raw =~ m@<dt>(.+?)</dt>@s) {
+						my $def_raw = $1; $def_raw =~ s/<.+?>//sg; $def_raw =~ s/^\W+//;
+						$response .= ucfirst($value);
+						if ($dict_raw =~ m@<fl>(.+?)</fl>@) { $response .= " ($1)"; }
+						$response .= ": " . ucfirst($def_raw);
+						$response = trim($response);
+						if ($response !~ /\W$/) { $response .= "."; }
+					}
 				}
 				
-				if ($meaning) {
-					print ucfirst($value) . ": " . encode('UTF-8', $meaning, Encode::FB_QUIET) . "\n";
+				if ($response) {
+					print encode('UTF-8', $response, Encode::FB_QUIET) . "\n";
 				}
 				else {
 					my $items = $self->_google_search($value);
 					if (@$items) {
-						$meaning = shift @$items;
+						my $item = shift @$items;
+						my $meaning = $item->{title} . ": " . $item->{link};
 						print "No definition found for $value, but a Google search finds: " . encode('UTF-8', $meaning, Encode::FB_QUIET) . "\n";
 					}
 					else {
@@ -253,6 +302,12 @@ sub define {
 			if ($@) { $self->log_debug(1, "CHILD CRASH define: $@"); }
 		} # sub
 	);
+}
+
+sub first_key {
+	my $hashref = shift;
+	my ($key, undef) = each %$hashref;
+	return $key;
 }
 
 1;
