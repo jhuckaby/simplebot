@@ -16,7 +16,7 @@ use Encode qw(decode encode);
 
 sub init {
 	my $self = shift;
-	$self->register_commands('google', 'define', 'image');
+	$self->register_commands('google', 'define', 'image', 'stock');
 }
 
 sub google {
@@ -308,6 +308,47 @@ sub first_key {
 	my $hashref = shift;
 	my ($key, undef) = each %$hashref;
 	return $key;
+}
+
+sub stock {
+	# yahoo stock search
+	my ($self, $value, $args) = @_;
+	my $username = $args->{who};
+	
+	return undef unless $value;
+	
+	$self->log_debug(9, "Forking for Yahoo Stock API...");
+	
+	$self->{bot}->forkit(
+		channel => nch( $args->{channel} ),
+		handler => '_fork_utf8_said',
+		run => sub {
+			eval {
+				# http://download.finance.yahoo.com/d/quotes.csv?s=adp&f=l1=.csv
+				# 75.82,"ADP","ADP","-1.55 - -2.00%","ADP",2023253
+				# 0.00,"ZRZ","ZRZ","N/A - N/A","ZRZ",N/A
+				
+				my $url = 'http://download.finance.yahoo.com/d/quotes.csv?s='.$value.'&f=l1=.csv';
+				$self->log_debug(9, "Fetching Yahoo Stock URL: $url");
+				
+				my $csv_raw = trim(file_get_contents($url));
+				$self->log_debug(9, "Raw result: $csv_raw");
+				
+				my $cols = [ map { $_ =~ s/^\"(.+)\"$/$1/; $_; } split(/\,/, $csv_raw) ];
+				if ($cols->[0] !~ /^0(\.0+)?$/) {
+					# non-zero value
+					my $price = '$' . $cols->[0];
+					my $symbol = uc($cols->[1]);
+					my ($price_change, $pct_change) = split(/\s+\-\s+/, $cols->[3]);
+					print "$symbol: $price ($price_change, $pct_change)\n";
+				}
+				else {
+					print "Stock symbol not found: ".uc($value)."\n";
+				}
+			}; # eval
+			if ($@) { $self->log_debug(1, "CHILD CRASH stock: $@"); }
+		} # sub
+	);
 }
 
 1;
