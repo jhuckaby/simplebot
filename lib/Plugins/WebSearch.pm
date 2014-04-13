@@ -16,7 +16,7 @@ use Encode qw(decode encode);
 
 sub init {
 	my $self = shift;
-	$self->register_commands('google', 'define', 'image', 'stock');
+	$self->register_commands('google', 'define', 'image', 'stock', 'urban');
 }
 
 sub google {
@@ -318,7 +318,7 @@ sub first_key {
 }
 
 sub stock {
-	# yahoo stock search
+	# Yahoo! stock symbol lookup (get quote)
 	my ($self, $value, $args) = @_;
 	my $username = $args->{who};
 	
@@ -354,6 +354,63 @@ sub stock {
 				}
 			}; # eval
 			if ($@) { $self->log_debug(1, "CHILD CRASH stock: $@"); }
+		} # sub
+	);
+}
+
+sub urban {
+	# Urban Dictionary term search
+	my ($self, $value, $args) = @_;
+	my $username = $args->{who};
+	
+	return undef unless $value;
+	
+	$self->log_debug(9, "Forking for Urban Dictionary API...");
+	
+	$self->{bot}->forkit(
+		channel => nch( $args->{channel} ),
+		handler => '_fork_utf8_said',
+		run => sub {
+			eval {
+				# http://api.urbandictionary.com/v0/define?page=1&term=pumpion
+				
+				my $url = 'http://api.urbandictionary.com/v0/define?page=1&term='.uri_escape($value);
+				$self->log_debug(9, "Fetching Urban Dictionary URL: $url");
+				
+				my $json_raw = trim(file_get_contents($url));
+				$self->log_debug(9, "Raw result: $json_raw");
+				
+				my $json = eval { json_parse( $json_raw ); };
+				if ($json && $json->{list} && $json->{list}->[0] && $json->{list}->[0]->{definition}) {
+					my $item = $json->{list}->[0];
+					# my $urban_url = $item->{permalink};
+					my $urban_url = 'http://www.urbandictionary.com/define.php?term=' . uri_escape($value);
+					my $title = ucfirst($item->{word} || $value);
+					my $definition = $item->{definition};
+					my $response = "$title: $definition";
+					
+					# only one sentence needed
+					my $new_response = '';
+					foreach my $sentence (split(/\.\s*/, $response)) {
+						$new_response .= $sentence . ". ";
+						last if (length($new_response) >= 50);
+					}
+					$response = trim($new_response);
+					
+					# squeeze URL onto end
+					if (length($response) >= 500 - length($urban_url)) {
+						$response = substr($response, 0, 500 - length($urban_url));
+						$response =~ s/\.+$//; $response .= "...";
+					}
+					$response .= " " . $urban_url;
+					
+					print "$response\n";
+				}
+				else {
+					print "Definition not found: ".ucfirst($value)."\n";
+				}
+			}; # eval
+			if ($@) { $self->log_debug(1, "CHILD CRASH urban: $@"); }
 		} # sub
 	);
 }

@@ -13,7 +13,8 @@
 		<Brief>
 GOOGLE - Perform Google search and return first result.
 IMAGE - Perform Google image search and return direct URL to first result.
-DEFINE - Define term using Google's Define API.
+DEFINE - Define term using the Wikipedia API.
+URBAN - Define term using the Urban Dictionary API.
 STOCK - Grab stock quote given company symbol (uses Yahoo Finance API).
 		</Brief>
 		<Detail>
@@ -35,6 +36,10 @@ This uses the Wikipedia API to locate a suitable definition for a term.  The res
 -
 Note that this is optional, and the DEFINE command works just fine with Wikipedia for most terms.  The DictionaryAPI.com is mainly used as a fallback, if the Wikipedia API fails or it doesn't define a particular term.
 			</define>
+			<urban>
+URBAN term
+This uses the Urban Dictionary API to locate a suitable definition for a term.  The result is emitted to the current channel.  Beware: Urban Dictionary can be very NSFW.  Use this at your own risk.  Remember, you can restrict access for any command to be owner only: !access set urban owner
+			</urban>
 			<stock>
 STOCK symbol
 This uses the Yahoo Finance API to grab a stock quote for the given symbol.  It reports the current price and change.  Example: !stock GOOG
