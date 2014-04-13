@@ -16,7 +16,7 @@ use Encode qw(decode encode);
 
 sub init {
 	my $self = shift;
-	$self->register_commands('google', 'define', 'image', 'stock', 'urban');
+	$self->register_commands('google', 'define', 'image', 'stock', 'urban', 'spell');
 }
 
 sub google {
@@ -315,6 +315,51 @@ sub first_key {
 	my $hashref = shift;
 	my ($key, undef) = each %$hashref;
 	return $key;
+}
+
+sub spell {
+	# Spell check from DictionaryAPI.com
+	my ($self, $value, $args) = @_;
+	my $username = $args->{who};
+	
+	return undef unless $value;
+	
+	if (!$self->{config}->{DictAPIKey}) {
+		return "$username: No API key is set for DictionaryAPI.com.  Please type: !help spell";
+	}
+	
+	$self->log_debug(9, "Forking for DictionaryAPI.com...");
+	
+	$self->{bot}->forkit(
+		channel => nch( $args->{channel} ),
+		handler => '_fork_utf8_said',
+		run => sub {
+			eval {
+				my $url = 'http://www.dictionaryapi.com/api/v1/references/collegiate/xml/'.lc($value).'?key=' . $self->{config}->{DictAPIKey};
+				$self->log_debug(9, "Fetching URL: $url");
+				my $dict_raw = file_get_contents( $url );
+				my $response = '';
+				
+				if ($dict_raw =~ m@<dt>(.+?)</dt>@s) {
+					my $def_raw = $1; $def_raw =~ s/<.+?>//sg; $def_raw =~ s/^\W+//;
+					$response .= ucfirst($value) . " is spelled correctly.\n";
+				}
+				else {
+					my $xml = parse_xml( $dict_raw );
+					$response .= ucfirst($value) . " was not found in dictionary.";
+					if (ref($xml) && $xml->{suggestion}) {
+						XMLalwaysarray( xml=>$xml, element=>'suggestion' );
+						my $suggestions = $xml->{suggestion};
+						while (scalar @$suggestions > 5) { pop @$suggestions; }
+						$response .= "  Suggestions: " . join(', ', @$suggestions);
+					}
+				}
+				
+				print "$response\n";
+			}; # eval
+			if ($@) { $self->log_debug(1, "CHILD CRASH spell: $@"); }
+		} # sub
+	);
 }
 
 sub stock {
