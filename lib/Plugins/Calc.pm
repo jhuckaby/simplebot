@@ -96,16 +96,30 @@ sub roll {
 	my $value = 0;
 	my $orig_msg = '' . $msg;
 	
-	if ($msg =~ s/(\d+)d(\d+)//) {
-		my ($num, $sides) = ($1, $2);
-		for (1..$num) { $value += int( ultra_rand($sides) ) + 1; }
-		
-		if ($msg =~ /\+\s*(\d+)/) { $value += $1; }
-		elsif ($msg =~ /\-\s*(\d+)/) { $value -= $1; }
-	}
-	else { return "$username: Invalid format for dice roll.  Try !roll 1d6"; }
+	my $actions = [];
 	
-	return "Dice Roll: $orig_msg = $value";
+	while ($msg =~ s/(\d+)d(\d+)//) {
+		my ($num, $sides) = ($1, $2);
+		for (1..$num) {
+			my $result = int( ultra_rand($sides) ) + 1;
+			push @$actions, "[$result]";
+			$value += $result; 
+		}
+	}
+	while ($msg =~ s/\+\s*(\d+)//) {
+		my $num = int($1);
+		push @$actions, "+$num";
+		$value += $num; 
+	}
+	while ($msg =~ s/\-\s*(\d+)//) {
+		my $num = int($1);
+		push @$actions, "-$num";
+		$value -= $num; 
+	}
+	
+	if (!@$actions) { return "$username: Invalid format for dice roll.  Try !roll 1d6"; }
+	
+	return "Dice Roll for $username: $orig_msg = " . join(' ', @$actions) . " = $value";
 }
 sub dice { return roll(@_); }
 
