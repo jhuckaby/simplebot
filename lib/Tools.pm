@@ -69,7 +69,7 @@ BEGIN
     use vars qw(@ISA @EXPORT @EXPORT_OK);
 
     @ISA		= qw(Exporter);
-    @EXPORT		= qw(XMLalwaysarray load_file save_file save_file_atomic get_hostname get_bytes_from_text get_text_from_bytes short_float commify pct pluralize alphanum ascii_table file_copy file_move generate_unique_id memory_substitute memory_lookup find_files ipv4_to_hostname hostname_to_ipv4 wget xml_to_javascript escape_js normalize_midnight yyyy_mm_dd mm_dd_yyyy yyyy get_nice_date follow_symlinks get_remote_ip get_user_agent strip_high merge_hashes xml_post parse_query compose_query parse_xml compose_xml decode_entities encode_entities encode_attrib_entities xpath_lookup db_query parse_cookies touch probably rand_array ultra_rand find_elem_idx dumper serialize_object deep_copy trim file_get_contents file_put_contents preg_match preg_replace make_dirs_for get_text_from_seconds get_seconds_from_text json_parse json_compose json_compose_pretty normalize_channel nch strip_channel sch find_timezone_name normalize_space find_bin get_english_list);
+    @EXPORT		= qw(XMLalwaysarray load_file save_file save_file_atomic get_hostname get_bytes_from_text get_text_from_bytes short_float commify pct pluralize alphanum ascii_table file_copy file_move generate_unique_id memory_substitute memory_lookup find_files ipv4_to_hostname hostname_to_ipv4 wget xml_to_javascript escape_js normalize_midnight yyyy_mm_dd mm_dd_yyyy yyyy get_nice_date follow_symlinks get_remote_ip get_user_agent strip_high merge_hashes xml_post parse_query compose_query parse_xml compose_xml decode_entities encode_entities encode_attrib_entities xpath_lookup db_query parse_cookies touch probably rand_array ultra_rand find_elem_idx find_object find_object_idx delete_object dumper serialize_object deep_copy trim file_get_contents file_put_contents preg_match preg_replace make_dirs_for get_text_from_seconds get_seconds_from_text json_parse json_compose json_compose_pretty normalize_channel nch strip_channel sch find_timezone_name normalize_space find_bin get_english_list);
 	@EXPORT_OK	= qw();
 }
 
@@ -1033,6 +1033,63 @@ sub find_elem_idx {
 	}
 	
 	return -1; # not found
+}
+
+sub find_object {
+	##
+	# Find object in array based on criteria (sub hash compare)
+	##
+	my $list = ref($_[0] eq 'HASH') ? [shift] : shift;
+	my $criteria = (scalar @_ == 1) ? shift : {@_};
+	
+	foreach my $elem (@$list) {
+		my $matches = 0;
+		foreach my $key (keys %$criteria) {
+			my $value = $criteria->{$key};
+			if (defined($elem->{$key}) && ($elem->{$key} eq $value)) { $matches++; }
+			elsif (defined($elem->{_Attribs}) && defined($elem->{_Attribs}->{$key}) && ($elem->{_Attribs}->{$key} eq $value)) { $matches++; }
+		}
+		if ($matches >= scalar keys %$criteria) { return $elem; }
+	}
+	
+	return 0;
+}
+
+sub find_object_idx {
+	##
+	# Find object in array based on criteria (sub hash compare), return index
+	##
+	my $list = ref($_[0] eq 'HASH') ? [shift] : shift;
+	my $criteria = (scalar @_ == 1) ? shift : {@_};
+	my $idx = 0;
+	
+	foreach my $elem (@$list) {
+		my $matches = 0;
+		foreach my $key (keys %$criteria) {
+			my $value = $criteria->{$key};
+			if (defined($elem->{$key}) && ($elem->{$key} eq $value)) { $matches++; }
+			elsif (defined($elem->{_Attribs}) && defined($elem->{_Attribs}->{$key}) && ($elem->{_Attribs}->{$key} eq $value)) { $matches++; }
+		}
+		if ($matches >= scalar keys %$criteria) { return $idx; }
+		$idx++;
+	}
+	
+	return -1;
+}
+
+sub delete_object {
+	##
+	# Find object by criteria, and remove from array
+	# MUST pass in real array ref
+	##
+	my $list = shift;
+	my $criteria = (scalar @_ == 1) ? shift : {@_};
+	my $idx = find_object_idx( $list, $criteria );
+	if ($idx == -1) { return 0; }
+	
+	splice( @$list, $idx, 1 );
+	
+	return 1;
 }
 
 sub dumper {
