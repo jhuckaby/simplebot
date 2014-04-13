@@ -227,44 +227,51 @@ sub define {
 					my $items = $self->_google_search($value . " site:wikipedia.org");
 					if ($items && $items->[0] && ($items->[0]->{link} =~ m@wikipedia.org/wiki/(.+)$@)) {
 						my $wiki_article_title = uri_unescape($1);
+						$wiki_article_title =~ s/^Wiktionary\://;
 						my $wiki_url = $items->[0]->{link};
 						
-						my $url = 'http://en.wikipedia.org/w/api.php?format=json&action=query&titles='.uri_escape($wiki_article_title).'&prop=extracts&exchars=512&exsectionformat=plain&explaintext=1';
-						$self->log_debug(9, "Fetching URL: $url");
-						my $wiki_raw = file_get_contents( $url );
-						my $wiki_json = eval { json_parse( $wiki_raw ); };
+						my $orig_words_pipe_esc = join('|', map { $_ =~ s/(\W)/\\$1/g; $_ =~ s/e?s$//i; $_; } split(/\s+/, $value));
 						
-						if ($wiki_json && $wiki_json->{query}->{pages}) {
-							my $page_key = first_key( $wiki_json->{query}->{pages} );
-							if ($wiki_json->{query}->{pages}->{$page_key}->{extract}) {
-								my $extract = $wiki_json->{query}->{pages}->{$page_key}->{extract};
-								my $nice_title = $wiki_article_title; $nice_title =~ s/_/ /g;
-								
-								# only prefix with title if extract doesn't already start with it
-								my $nice_title_esc = $nice_title; $nice_title_esc =~ s/(\W)/\\$1/g;
-								if ($extract !~ /^$nice_title_esc/) {
-									$response .= "$nice_title: ";
-								}
-								
-								# add extract
-								$response .= "$extract";
-								
-								# only one sentence needed
-								my $new_response = '';
-								foreach my $sentence (split(/\.\s*/, $response)) {
-									$new_response .= $sentence . ". ";
-									last if (length($new_response) >= 50);
-								}
-								$response = trim($new_response);
-								
-								# squeeze URL onto end
-								if (length($response) >= 500 - length($wiki_url)) {
-									$response = substr($response, 0, 500 - length($wiki_url));
-									$response =~ s/\.+$//; $response .= "...";
-								}
-								$response .= " " . $wiki_url;
-							} # found definition
-						} # good json
+						$self->log_debug(9, "orig_words_pipe_esc: $orig_words_pipe_esc (title: $wiki_article_title)");
+						
+						if (($wiki_article_title =~ m@($orig_words_pipe_esc)@i) && ($wiki_article_title !~ /\:/)) {
+							my $url = 'http://en.wikipedia.org/w/api.php?format=json&action=query&titles='.uri_escape($wiki_article_title).'&prop=extracts&exchars=512&exsectionformat=plain&explaintext=1';
+							$self->log_debug(9, "Fetching URL: $url");
+							my $wiki_raw = file_get_contents( $url );
+							my $wiki_json = eval { json_parse( $wiki_raw ); };
+							
+							if ($wiki_json && $wiki_json->{query}->{pages}) {
+								my $page_key = first_key( $wiki_json->{query}->{pages} );
+								if ($wiki_json->{query}->{pages}->{$page_key}->{extract}) {
+									my $extract = $wiki_json->{query}->{pages}->{$page_key}->{extract};
+									my $nice_title = $wiki_article_title; $nice_title =~ s/_/ /g;
+									
+									# only prefix with title if extract doesn't already start with it
+									my $nice_title_esc = $nice_title; $nice_title_esc =~ s/(\W)/\\$1/g;
+									if ($extract !~ /^(the\s+|a\s+)?$nice_title_esc/i) {
+										$response .= "$nice_title: ";
+									}
+									
+									# add extract
+									$response .= "$extract";
+									
+									# only one sentence needed
+									my $new_response = '';
+									foreach my $sentence (split(/\.\s*/, $response)) {
+										$new_response .= $sentence . ". ";
+										last if (length($new_response) >= 50);
+									}
+									$response = trim($new_response);
+									
+									# squeeze URL onto end
+									if (length($response) >= 500 - length($wiki_url)) {
+										$response = substr($response, 0, 500 - length($wiki_url));
+										$response =~ s/\.+$//; $response .= "...";
+									}
+									$response .= " " . $wiki_url;
+								} # found definition
+							} # good json
+						} # good wiki title
 					} # first google result is a wiki
 				} # need google / wiki search
 				

@@ -41,9 +41,16 @@ sub insult {
 	# no username set?  insult self
 	if (!$msg) { $msg = $username; }
 	
-	# allow user to specify replacement words
+	# allow user to specify replacement words, and quotes for insulting a multi-word thing
 	my $extras = [];
-	$msg =~ s/\s+(\S+)/ push @$extras, $1; ''; /eg;
+	if ($msg =~ /^\"(.+?)\"(.*)$/) {
+		$msg = trim($1);
+		my $extras_raw = trim($2);
+		if ($extras_raw =~ /\S/) { $extras = [ split(/\s+/, $extras_raw) ]; }
+	}
+	else {
+		$msg =~ s/\s+(\S+)/ push @$extras, $1; ''; /eg;
+	}
 	
 	my $extra_adjs = [];
 	my $extra_noun = '';
