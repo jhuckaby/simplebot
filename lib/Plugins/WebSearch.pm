@@ -346,7 +346,7 @@ sub spell {
 				}
 				else {
 					my $xml = parse_xml( $dict_raw );
-					$response .= ucfirst($value) . " was not found in dictionary.";
+					$response .= ucfirst($value) . " was not found in the dictionary.";
 					if (ref($xml) && $xml->{suggestion}) {
 						XMLalwaysarray( xml=>$xml, element=>'suggestion' );
 						my $suggestions = $xml->{suggestion};
