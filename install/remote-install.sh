@@ -28,30 +28,33 @@ echo ""
 # Stop services, if they are running
 /etc/init.d/simplebotd stop >/dev/null 2>&1
 
-if which yum >/dev/null 2>&1 ; then 
-	# Linux prereq install
-	yum -y install perl wget gzip zip gcc gcc-c++ libstdc++-devel pkgconfig curl make openssl openssl-devel openssl-perl perl-libwww-perl perl-Time-HiRes perl-JSON perl-ExtUtils-MakeMaker perl-TimeDate perl-Test-Simple || exit 1
-else
-	if which apt-get >/dev/null 2>&1 ; then
-		# Ubuntu prereq install
-		apt-get -y install perl wget gzip zip build-essential libssl-dev pkg-config libwww-perl libjson-perl || exit 1
+# Only run yum/apt-get on first install
+if [ ! -f /opt/simplebot/conf/config.xml ]; then
+	if which yum >/dev/null 2>&1 ; then 
+		# Linux prereq install
+		yum -y install perl wget gzip zip gcc gcc-c++ libstdc++-devel pkgconfig curl make openssl openssl-devel openssl-perl perl-libwww-perl perl-Time-HiRes perl-JSON perl-ExtUtils-MakeMaker perl-TimeDate perl-Test-Simple || exit 1
 	else
-		echo ""
-		echo "ERROR: This server is not supported by the SimpleBot auto-installer, as it does not have 'yum' nor 'apt-get'."
-		echo "Please see the manual installation instructions at: http://effectgames.com/software/simplebot/"
-		echo ""
-		exit 1
+		if which apt-get >/dev/null 2>&1 ; then
+			# Ubuntu prereq install
+			apt-get -y install perl wget gzip zip build-essential libssl-dev pkg-config libwww-perl libjson-perl || exit 1
+		else
+			echo ""
+			echo "ERROR: This server is not supported by the SimpleBot auto-installer, as it does not have 'yum' nor 'apt-get'."
+			echo "Please see the manual installation instructions at: http://effectgames.com/software/simplebot/"
+			echo ""
+			exit 1
+		fi
 	fi
-fi
-
-if which cpanm >/dev/null 2>&1 ; then 
-	echo "cpanm is already installed, good."
-else
-	export PERL_CPANM_OPT="--notest --configure-timeout=3600"
-	if which curl >/dev/null 2>&1 ; then 
-		curl -L http://cpanmin.us | perl - App::cpanminus
+	
+	if which cpanm >/dev/null 2>&1 ; then 
+		echo "cpanm is already installed, good."
 	else
-		wget -O - http://cpanmin.us | perl - App::cpanminus
+		export PERL_CPANM_OPT="--notest --configure-timeout=3600"
+		if which curl >/dev/null 2>&1 ; then 
+			curl -L http://cpanmin.us | perl - App::cpanminus
+		else
+			wget -O - http://cpanmin.us | perl - App::cpanminus
+		fi
 	fi
 fi
 

@@ -82,6 +82,11 @@ exec_shell( "cp -R $base_dir/sample_conf/Plugins/* $base_dir/conf/Plugins/" );
 exec_shell( "cp $base_dir/install/simplebotd.init /etc/init.d/simplebotd" );
 exec_shell( "chmod 775 /etc/init.d/simplebotd" );
 
+# Remove old GoogleSearch Plugin (was renamed to WebSearch)
+# TODO: Can remove this after everyone has upgraded past it
+if (-e '/opt/simplebot/lib/Plugins/GoogleSearch.pm') { unlink '/opt/simplebot/lib/Plugins/GoogleSearch.pm'; }
+if (-e '/opt/simplebot/conf/Plugins/GoogleSearch.xml') { unlink '/opt/simplebot/conf/Plugins/GoogleSearch.xml'; }
+
 if ($first_install) {
 	# set config.xml/secret_key
 	my $password = substr( md5_hex( time() . $$ . rand() ), 0, 8 );
