@@ -50,6 +50,15 @@ sub quakes {
 		$self->dirty(1);
 		return "Earthquake monitoring disabled.";
 	}
+	elsif ($msg =~ /^status/i) {
+		# show status, channel
+		if ($self->{data}->{monitor_enabled}) {
+			return "Earthquake monitoring is currently enabled in channel ".nch($self->{data}->{channel})." (category: ".$self->{config}->{FeedID}.").";
+		}
+		else {
+			return "Earthquake monitoring is disabled.";
+		}
+	}
 	else {
 		# emit most recent quake, even if repeat
 		my $quakes = $self->get_quakes('day');
@@ -95,7 +104,7 @@ sub tick {
 							$num_actions++;
 							$num_new_quakes++;
 							my $props = $quake->{properties};
-							$self->log_debug(9, "New quake detected: " . $quake->{id} . ": " . json_encode($props));
+							$self->log_debug(9, "New quake detected: " . $quake->{id} . ": " . json_compose($props));
 							print "New Earthquake: Magnitude " . $props->{mag} . ", " . $props->{place} . ": " . $props->{url} . "\n";
 						}
 					}

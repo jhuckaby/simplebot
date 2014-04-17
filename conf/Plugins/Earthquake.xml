@@ -17,8 +17,9 @@ QUAKES - Report most recent earthquake from USGS, and enable live quake monitori
 			<quakes>
 QUAKES on
 QUAKES off
+QUAKES status
 QUAKE
-This command can enable or disable live earthquake monitoring (data provided by USGS).  The bot can emit earthquake reports into the current channel, within 60 seconds of the event happening.  Type "!quakes on" to enable live monitoring and "!quakes off" to disable it.  You can also type "!quake" to emit the most recent quake reported in the last 24 hours.
+This command can enable or disable live earthquake monitoring (data provided by USGS).  The bot can emit earthquake reports into the current channel, within 60 seconds of the event happening.  Type "!quakes on" to enable live monitoring, "!quakes off" to disable it, and "!quakes status" to get the current status.  You can also type "!quake" to emit the most recent quake reported in the last 24 hours.
 The USGS provides five different earthquake feeds, which vary on their minimum magnitude.  To set which feed to pull from, use this command:
 -
 !config set Earthquake/FeedID significant

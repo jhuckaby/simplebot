@@ -59,9 +59,14 @@ sub award {
 			$reason = ' ' . $reason;
 		}
 		
+		# support alternate syntax (swapped amount and username)
+		if (($amount !~ /^(\+|\-)?\d+$/) && ($target_nick =~ /^(\+|\-)?\d+$/)) {
+			my $temp = $amount; $amount = $target_nick; $target_nick = $temp;
+		}
+		
 		if ($amount !~ /^(\+|\-)?\d+$/) { return "$username: Invalid syntax, please specify a number of points to award or deduct."; }
 		if ($amount =~ /^\-(\d+)$/) { $amount = 0 - int($1); $action = 'deduct'; }
-		if (!$amount) { return "$username: Nothing giveth, nothing taketh away."; }
+		if (!$amount) { return "$username: Whatever."; }
 		
 		# setup user list
 		$self->{data}->{users} ||= {};
@@ -87,7 +92,7 @@ sub award {
 		$self->dirty(1);
 		
 		my $abs_amount = $amount; $abs_amount =~ s/\D+//g;
-		my $new_user_total = $users->{ lc($target_nick) };
+		my $new_user_total = $users->{ lc($target_nick) } || 0;
 		
 		# find new rank
 		my $new_user_rank = $self->find_rank( lc($target_nick) );
@@ -136,6 +141,11 @@ sub deduct {
 	
 	if ($msg =~ /^(\w+)\s+(\+|\-)?(\d+)(.*)$/) {
 		my ($target_nick, $direction, $amount, $after) = ($1, $2, $3, $4);
+		$amount = 0 - int($amount);
+		return $self->award( "$target_nick $amount $after", $args );
+	}
+	elsif ($msg =~ /^(\+|\-)?(\d+)\s+(\w+)(.*)$/) {
+		my ($direction, $amount, $target_nick, $after) = ($1, $2, $3, $4);
 		$amount = 0 - int($amount);
 		return $self->award( "$target_nick $amount $after", $args );
 	}

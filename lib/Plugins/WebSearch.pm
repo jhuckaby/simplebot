@@ -230,11 +230,12 @@ sub define {
 						$wiki_article_title =~ s/^Wiktionary\://;
 						my $wiki_url = $items->[0]->{link};
 						
-						my $orig_words_pipe_esc = join('|', map { $_ =~ s/(\W)/\\$1/g; $_ =~ s/e?s$//i; $_; } split(/\s+/, $value));
+						my $orig_words_pipe_esc = join('|', map { $_ =~ s/\W+//g; $_ =~ s/e?s$//i; $_; } split(/\s+/, $value));
+						my $wiki_article_title_esc = $wiki_article_title; $wiki_article_title_esc =~ s/\W+//g;
 						
-						$self->log_debug(9, "orig_words_pipe_esc: $orig_words_pipe_esc (title: $wiki_article_title)");
+						$self->log_debug(9, "orig_words_pipe_esc: $orig_words_pipe_esc (title_esc: $wiki_article_title_esc)");
 						
-						if (($wiki_article_title =~ m@($orig_words_pipe_esc)@i) && ($wiki_article_title !~ /\:/)) {
+						if (($wiki_article_title_esc =~ m@($orig_words_pipe_esc)@i) && ($wiki_article_title !~ /\:/)) {
 							my $url = 'http://en.wikipedia.org/w/api.php?format=json&action=query&titles='.uri_escape($wiki_article_title).'&prop=extracts&exchars=512&exsectionformat=plain&explaintext=1';
 							$self->log_debug(9, "Fetching URL: $url");
 							my $wiki_raw = file_get_contents( $url );

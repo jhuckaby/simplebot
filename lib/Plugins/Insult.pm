@@ -12,6 +12,7 @@ use strict;
 use base qw( SimpleBot::Plugin );
 use Tools;
 use List::Util qw(shuffle);
+use URI::Escape;
 
 sub init {
 	my $self = shift;
@@ -42,14 +43,19 @@ sub insult {
 	if (!$msg) { $msg = $username; }
 	
 	# allow user to specify replacement words, and quotes for insulting a multi-word thing
-	my $extras = [];
+	my $extras_raw = '';
 	if ($msg =~ /^\"(.+?)\"(.*)$/) {
 		$msg = trim($1);
-		my $extras_raw = trim($2);
-		if ($extras_raw =~ /\S/) { $extras = [ split(/\s+/, $extras_raw) ]; }
+		$extras_raw = trim($2);
 	}
-	else {
-		$msg =~ s/\s+(\S+)/ push @$extras, $1; ''; /eg;
+	elsif ($msg =~ s/\s+(.+)$//) {
+		$extras_raw = trim($1);
+	}
+	
+	my $extras = [];
+	if ($extras_raw =~ /\S/) {
+		$extras_raw =~ s/\"(.+?)\"/ uri_escape($1); /eg;
+		$extras = [ map { uri_unescape($_); } split(/\s+/, $extras_raw) ];
 	}
 	
 	my $extra_adjs = [];
