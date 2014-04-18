@@ -496,9 +496,6 @@ sub get_alarm_from_raw {
 		$alarm->{month} = $1;
 		$alarm->{mday} = $2;
 	}
-	elsif ($raw =~ s/\b(\d{4})\b//i) {
-		$alarm->{year} = $1;
-	}
 	
 	if ($raw =~ s/\b(daily|weekly|monthly|yearly)\b//i) {
 		$alarm->{repeat} = 1;
