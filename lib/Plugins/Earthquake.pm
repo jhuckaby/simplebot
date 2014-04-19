@@ -176,21 +176,22 @@ sub get_quakes {
 	my $range = shift || 'hour';
 	my $quakes = [];
 	
-	my $quake_feed_id = $self->{config}->{FeedID};
-	my $url = 'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/'.$quake_feed_id.'_'.$range.'.geojson';
-	$self->log_debug(9, "Fetching USGS earthquake data: $url");
-	
-	my $json_raw = trim(file_get_contents($url));
-	$self->log_debug(9, "Raw result: $json_raw");
-	
-	my $json = eval { json_parse( $json_raw ); };
-	if ($json && $json->{features} && $json->{features}->[0]) {
-		foreach my $event (@{$json->{features}}) {
-			if ($event->{properties} && $event->{properties}->{type} && ($event->{properties}->{type} eq 'earthquake')) {
-				push @$quakes, $event;
+	foreach my $quake_feed_id (split(/\,\s*/, $self->{config}->{FeedID})) {
+		my $url = 'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/'.$quake_feed_id.'_'.$range.'.geojson';
+		$self->log_debug(9, "Fetching USGS earthquake data: $url");
+		
+		my $json_raw = trim(file_get_contents($url));
+		$self->log_debug(9, "Raw result: $json_raw");
+		
+		my $json = eval { json_parse( $json_raw ); };
+		if ($json && $json->{features} && $json->{features}->[0]) {
+			foreach my $event (@{$json->{features}}) {
+				if ($event->{properties} && $event->{properties}->{type} && ($event->{properties}->{type} eq 'earthquake')) {
+					push @$quakes, $event;
+				}
 			}
 		}
-	}
+	} # foreach quake feed
 	
 	return $quakes;
 }
