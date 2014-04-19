@@ -336,7 +336,7 @@ sub spell {
 		handler => '_fork_utf8_said',
 		run => sub {
 			eval {
-				my $url = 'http://www.dictionaryapi.com/api/v1/references/collegiate/xml/'.lc($value).'?key=' . $self->{config}->{DictAPIKey};
+				my $url = 'http://www.dictionaryapi.com/api/v1/references/collegiate/xml/'.lc(uri_escape($value)).'?key=' . $self->{config}->{DictAPIKey};
 				$self->log_debug(9, "Fetching URL: $url");
 				my $dict_raw = file_get_contents( $url );
 				my $response = '';
