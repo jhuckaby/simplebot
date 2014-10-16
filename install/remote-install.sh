@@ -32,7 +32,7 @@ echo ""
 if [ ! -f /opt/simplebot/conf/config.xml ]; then
 	if which yum >/dev/null 2>&1 ; then 
 		# Linux prereq install
-		yum -y install perl wget gzip zip gcc gcc-c++ libstdc++-devel pkgconfig curl make openssl openssl-devel openssl-perl perl-libwww-perl perl-Time-HiRes perl-JSON perl-ExtUtils-MakeMaker perl-TimeDate perl-Test-Simple || exit 1
+		yum -y install perl wget gzip zip gcc gcc-c++ libstdc++-devel pkgconfig curl make openssl openssl-devel openssl-perl perl-libwww-perl perl-Time-HiRes perl-JSON perl-ExtUtils-MakeMaker perl-TimeDate || exit 1
 	else
 		if which apt-get >/dev/null 2>&1 ; then
 			# Ubuntu prereq install
@@ -51,9 +51,9 @@ if [ ! -f /opt/simplebot/conf/config.xml ]; then
 	else
 		export PERL_CPANM_OPT="--notest --configure-timeout=3600"
 		if which curl >/dev/null 2>&1 ; then 
-			curl -L http://cpanmin.us | perl - App::cpanminus
+			curl -L https://raw.githubusercontent.com/miyagawa/cpanminus/master/cpanm | perl - App::cpanminus
 		else
-			wget -O - http://cpanmin.us | perl - App::cpanminus
+			wget -O - https://raw.githubusercontent.com/miyagawa/cpanminus/master/cpanm | perl - App::cpanminus
 		fi
 	fi
 fi
