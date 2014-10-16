@@ -2,7 +2,7 @@
 
 ##
 # SimpleBot 1.0
-# by Joseph Huckaby, 2011 - 2013
+# by Joseph Huckaby, 2011 - 2014
 # MIT Licensed
 ##
 
@@ -21,7 +21,8 @@ use POSIX qw/:sys_wait_h setsid/;
 
 $| = 1;
 
-$SIG{'__DIE__'} = sub { Carp::cluck("Stack Trace: "); };
+# POE throws a bunch of exceptions which makes this freak out at startup -- commenting it out
+# $SIG{'__DIE__'} = sub { Carp::cluck("Stack Trace: "); };
 
 # figure out our base dir and cd into it
 my $base_dir = dirname(dirname(abs_path($0)));
@@ -41,7 +42,10 @@ if (@ARGV && ($ARGV[0] =~ /\.xml$/i)) {
 # process command line args
 my $cmdline_args = new Args();
 
-if (!$cmdline_args->{debug}) {
+if ($cmdline_args->{debug}) {
+	$SIG{'__DIE__'} = sub { Carp::cluck("Stack Trace: "); };
+}
+else {
 	# not running in cmd-line debug mode, so fork daemon process, write pid file
 	become_daemon();
 	
