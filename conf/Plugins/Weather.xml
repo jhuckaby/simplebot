@@ -2,11 +2,8 @@
 <PluginConfig>
 	<Version>1.0</Version>
 	
-	<!-- API Key for free.worldweatheronline.com -->
+	<!-- API Key for WeatherUnderground.com -->
 	<APIKey></APIKey>
-	
-	<DegreeUnits>C (F)</DegreeUnits>
-	<WindSpeedUnits>K (M)</WindSpeedUnits>
 	
 	<Access>
 		<Default>voice</Default>
@@ -14,17 +11,17 @@
 	
 	<Help>
 		<Brief>
-WEATHER - Get current conditions for US zip code or 'city country'.
-FORECAST - Set 5 day forecast for US zip code or 'city country'.
+WEATHER - Get current conditions for US zip code, 'city state' or 'city country'.
+FORECAST - Set 5 day forecast for US zip code, 'city state' or 'city country'.
 LOCATION - Set your default location and time zone for future queries.
 		</Brief>
 		<Detail>
 			<weather>
 WEATHER location
 -
-Get current weather conditions.  Specify any 5-digit US ZIP code (uses Yahoo! Weather), or any city and country separated by spaces (uses WorldWeatherOnline.com).  For example, 'weather guelph canada' or 'weather toronto ca'.  Countries can be abbreviated.
+Get current weather conditions.  Specify any 5-digit US ZIP code, or any city and country separated by spaces.  For example, 'weather guelph canada' or 'weather toronto canada'.  Countries need to be spelled out.
 -
-To get weather for countries outside the US, you will need to register for a free API Key at: http://developer.worldweatheronline.com/
+To get weather for countries outside the US, you will need to register for a free API Key at: http://www.wunderground.com/weather/api/
 After signing up, copy your API key and paste it into this command:
 -
 !config set Weather/APIKey YOUR_API_KEY_HERE
@@ -34,15 +31,15 @@ At this point the Weather Plugin should be ready to use.  Test it out by checkin
 			<forecast>
 FORECAST location
 -
-Get a 5-day forecast for the specified location, which can be any 5-digit US ZIP code, or any city and country separated by spaces.  For example, 'forecast guelph canada' or 'forecast toronto ca'.  Countries can be abbreviated.
-See "!help weather" for details on setting up your API key for WorldWeatherOnline.com (it's free).
+Get a 5-day forecast for the specified location, which can be any 5-digit US ZIP code, or any city and country separated by spaces.  For example, 'forecast guelph canada' or 'forecast toronto canada'.  Countries needs to be spelled out.
+See "!help weather" for details on setting up your API key for WeatherUnderground.com (it's free).
 			</forecast>
 			<location>
 LOCATION city state country
 LOCATION zipcode
 -
 Set your location for future weather and date/time queries, which the bot remembers.  This also looks up your time zone based on your location, and stores that for displaying and calculating dates and times for you.
-See "!help weather" for details on setting up your API key for WorldWeatherOnline.com (used for the location service -- it's free).
+See "!help weather" for details on setting up your API key for WeatherUnderground.com (used for the location service -- it's free).
 			</location>
 		</Detail>
 	</Help>

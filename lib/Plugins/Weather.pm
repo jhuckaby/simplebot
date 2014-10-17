@@ -2,7 +2,7 @@ package SimpleBot::Plugin::Weather;
 
 ##
 # Weather.pm
-# SimpleBot Plugin, reports the weather using Yahoo! (US) or WorldWeatherOnline.com (Non-US).
+# SimpleBot Plugin, reports the weather using WeatherUnderground.com or Yahoo!.
 # Copyright (c) 2013, 2014 Joseph Huckaby
 # MIT Licensed
 ##
@@ -46,16 +46,16 @@ sub weather {
 		else { return "$username: You didn't specify a location, and we don't have one on file for you."; }
 	}
 	
-	if ($value =~ /^\d{5}$/) {
-		# 5-digit US ZIP code, use Yahoo! (It's more accurate and up to date than WWO for the US, and requires no API key).
-		return $self->weather_yahoo($value, $args);
-	}
-	
 	if (!$self->{config}->{APIKey}) {
-		return "$username: No API key is set for WorldWeatherOnline.com.  Please type: !help weather";
+		if ($value =~ /^\d{5}$/) {
+			# 5-digit US ZIP code, use Yahoo! (requires no API key).
+			return $self->weather_yahoo($value, $args);
+		}
+		
+		return "$username: No API key is set for WeatherUnderground.com.  Please type: !help weather";
 	}
 	
-	$self->log_debug(9, "Forking for WorldWeatherOnline.com service...");
+	$self->log_debug(9, "Forking for WeatherUnderground.com service...");
 	
 	$self->{bot}->forkit(
 		channel => nch( $args->{channel} ),
@@ -63,85 +63,62 @@ sub weather {
 		run => sub {
 			eval {
 				my $response = '';
-				$value =~ s/\s+/,/g;
-				my $url = 'http://api.worldweatheronline.com/free/v1/weather.ashx?q='.uri_escape($value).'&format=json&num_of_days=5&key=' . $self->{config}->{APIKey};
+				
+				# resolve 'city state' or 'city country' to 'state_or_country/city_with_underscores'
+				if ($value =~ s/\,?\s+(\S+)$//) {
+					my $state_or_country = $1;
+					$value = $state_or_country . '/' . $value;
+					$value =~ s/\s+/_/g;
+				}
+				
+				my $url = 'http://api.wunderground.com/api/'.$self->{config}->{APIKey}.'/conditions/q/'.$value.'.json';
 				$self->log_debug(9, "Weather child fork, fetching: $url" );
 				
 				my $resp = wget( $url );
 				if ($resp->is_success()) {
 					my $weather = json_parse( $resp->content() );
-					if ($weather->{data}) {
-						my $data = $weather->{data};
-						if ($args->{forecast}) {
-							# 5 day forecast
-							if ($data->{weather} && ref($data->{weather})) {
-								$response = "Forecast for " . $data->{request}->[0]->{query} . ":\n";
-								foreach my $day (@{$data->{weather}}) {
-									my $epoch = str2time( $day->{date} );
-									my $nice_date = get_nice_date( $epoch, 0, 1 ); $nice_date =~ s/\,\s+\d{4}$//;
-									$response .= $nice_date . ": " . $day->{weatherDesc}->[0]->{value};
-									
-									$response .= ", High: " . $self->getFormattedTemperature(
-										C => $day->{tempMaxC} . 'C',
-										F => $day->{tempMaxF} . 'F'
-									);
-									$response .= ", Low: " . $self->getFormattedTemperature(
-										C => $day->{tempMinC} . 'C',
-										F => $day->{tempMinF} . 'F'
-									);
-									
-									# $response .= ", High: " . $day->{tempMaxC} . "C (" . $day->{tempMaxF} . "F)";
-									# $response .= ", Low: " . $day->{tempMinC} . "C (" . $day->{tempMinF} . "F)";
-									
-									if ($day->{windspeedMiles}) {
-										$response .= ", Wind: " . $day->{winddir16Point} . " @ " . $self->getFormattedSpeed(
-											K => $day->{windspeedKmph} . ' km/h',
-											M => $day->{windspeedMiles} . ' mph'
-										);
-										
-										# $response .= ", Wind: " . $day->{winddir16Point} . " @ " . $day->{windspeedKmph} . " km/h (" . $day->{windspeedMiles} . " mph)";
-									}
-									else { $response .= ", Wind: None"; }
-									$response .= "\n";
-								} # foreach day
-							} # good fmt
-						} # forecast
-						else {
-							# current conditions
-							my $cur = $data->{current_condition}->[0];
-							if ($cur) {
-								$response = "Current conditions for " . $data->{request}->[0]->{query} . ": ";
-								$response .= $cur->{weatherDesc}->[0]->{value};
-								
-								$response .= ", " . $self->getFormattedTemperature(
-									C => $cur->{temp_C} . 'C',
-									F => $cur->{temp_F} . 'F'
-								);
-								# $response .= ", " . $cur->{temp_C} . 'C (' . $cur->{temp_F} . 'F)';
-								
-								if ($cur->{windspeedMiles}) {
-									$response .= ", Wind: " . $cur->{winddir16Point} . " @ " . $self->getFormattedSpeed(
-										K => $cur->{windspeedKmph} . ' km/h',
-										M => $cur->{windspeedMiles} . ' mph'
-									);
-									# $response .= ", Wind: " . $cur->{winddir16Point} . " @ " . $cur->{windspeedKmph} . " km/h (" . $cur->{windspeedMiles} . " mph)";
-								}
-								else { $response .= ", Wind: None"; }
-								$response .= ", Humidity: " . $cur->{humidity} . '%';
-							}
-						} # current
+					
+					if ($args->{forecast}) {
+						my $forecast_url = 'http://api.wunderground.com/api/'.$self->{config}->{APIKey}.'/forecast/q/'.$value.'.json';
+						$self->log_debug(9, "Fetching forecast: $forecast_url" );
 						
-						if ($response) {
-							$self->log_debug(9, "Weather response: $response");
-							print trim($response) . "\n";
-						}
-						elsif ($data && $data->{error} && $data->{error}->[0] && $data->{error}->[0]->{msg}) {
-							$response = "Weather Error: " . $data->{error}->[0]->{msg};
-							$self->log_debug(9, "Weather response: $response");
-							print trim($response) . "\n";
-						}
-						else { $self->log_debug(9, "No response from weather API"); }
-					} # json good
+						$resp = wget( $forecast_url );
+						if ($resp->is_success()) {
+							my $forecast = json_parse( $resp->content() );
+							if ($forecast) {
+								$response = "Forecast for " . $weather->{current_observation}->{display_location}->{full} . ":\n";
+								my $days = $forecast->{forecast}->{txt_forecast}->{forecastday};
+								foreach my $day (@$days) {
+									if ($day->{title} !~ /night/i) {
+										$response .= $day->{title} . ": " . $day->{fcttext} . "\n";
+									}
+								}
+							} # good json
+						} # success
+					} # forecast
+					else {
+						my $data = $weather->{current_observation};
+						
+						$response = "Current conditions for " . $data->{display_location}->{full} . ": ";
+						$response .= $data->{weather} . ", " . $data->{temperature_string};
+						$response .= ", Wind: " . $data->{wind_string};
+						$response .= ", Humidity: " . $data->{relative_humidity};
+						$response .= ", Pressure: " . $data->{pressure_in} . " in\n";
+					} # conditions
+					
+					if ($response) {
+						$self->log_debug(9, "Weather response: $response");
+						print trim($response) . "\n";
+					}
+					elsif ($weather && $weather->{response} && $weather->{response}->{error} && $weather->{response}->{error}->{description}) {
+						$response = "Weather Error: " . $weather->{response}->{error}->{description};
+						$self->log_debug(9, "Weather response: $response");
+						print trim($response) . "\n";
+					}
+					else { 
+						$self->log_debug(9, "No response from weather API"); 
+					}
+					
 				} # wget success
 				else {
 					die "Failed to fetch weather: $url: " . $resp->status_line() . "\n";
@@ -166,26 +143,9 @@ sub forecast {
 	return $self->weather($value, $args);
 }
 
-sub getFormattedTemperature {
-	# format temperature based on config string
-	my $self = shift;
-	my $args = {@_};
-	my $template = $self->{config}->{DegreeUnits};
-	$template =~ s/(\w+)/ $args->{$1} || ''; /eg;
-	return $template;
-}
-
-sub getFormattedSpeed {
-	# format speed based on config string
-	my $self = shift;
-	my $args = {@_};
-	my $template = $self->{config}->{WindSpeedUnits};
-	$template =~ s/(\w+)/ $args->{$1} || ''; /eg;
-	return $template;
-}
-
 sub weather_yahoo {
 	# Get US weather using Yahoo and 5-digit US ZIP code
+	# This is used as a fallback when there is no WeatherUnderground API Key
 	my ($self, $value, $args) = @_;
 	my $username = $args->{who};
 	
@@ -230,6 +190,7 @@ sub weather_yahoo {
 					
 					if ($args->{forecast}) {
 						# <yweather:forecast day="Sat" date="12 Apr 2014" low="57" high="74" text="Partly Cloudy" code="30"/>
+						$response = "Forecast for $nice_loc:\n";
 						foreach my $fore (@{$item->{'yweather:forecast'}}) {
 							my $epoch = str2time( $fore->{date} );
 							my $nice_date = get_nice_date( $epoch, 0, 1 ); $nice_date =~ s/\,\s+\d{4}$//;
