@@ -25,7 +25,6 @@ use HTTP::Response;
 use URI::Escape;
 use Socket;
 use Data::Dumper;
-use UNIVERSAL qw(isa);
 use POSIX qw/fmod/;
 use JSON;
 
@@ -69,7 +68,7 @@ BEGIN
     use vars qw(@ISA @EXPORT @EXPORT_OK);
 
     @ISA		= qw(Exporter);
-    @EXPORT		= qw(XMLalwaysarray load_file save_file save_file_atomic get_hostname get_bytes_from_text get_text_from_bytes short_float commify pct pluralize alphanum ascii_table file_copy file_move generate_unique_id memory_substitute memory_lookup find_files ipv4_to_hostname hostname_to_ipv4 wget xml_to_javascript escape_js normalize_midnight yyyy_mm_dd mm_dd_yyyy yyyy get_nice_date follow_symlinks get_remote_ip get_user_agent strip_high merge_hashes xml_post parse_query compose_query parse_xml compose_xml decode_entities encode_entities encode_attrib_entities xpath_lookup db_query parse_cookies touch probably rand_array ultra_rand find_elem_idx find_object find_object_idx delete_object dumper serialize_object deep_copy trim file_get_contents file_put_contents preg_match preg_replace make_dirs_for get_text_from_seconds get_seconds_from_text json_parse json_compose json_compose_pretty normalize_channel nch strip_channel sch find_timezone_name normalize_space find_bin get_english_list);
+    @EXPORT		= qw(XMLalwaysarray load_file save_file save_file_atomic get_hostname get_bytes_from_text get_text_from_bytes short_float commify pct pluralize alphanum ascii_table file_copy file_move generate_unique_id memory_substitute memory_lookup find_files ipv4_to_hostname hostname_to_ipv4 wget escape_js normalize_midnight yyyy_mm_dd mm_dd_yyyy yyyy get_nice_date follow_symlinks get_remote_ip get_user_agent strip_high merge_hashes xml_post parse_query compose_query parse_xml compose_xml decode_entities encode_entities encode_attrib_entities xpath_lookup db_query parse_cookies touch probably rand_array ultra_rand find_elem_idx find_object find_object_idx delete_object dumper serialize_object deep_copy trim file_get_contents file_put_contents preg_match preg_replace make_dirs_for get_text_from_seconds get_seconds_from_text json_parse json_compose json_compose_pretty normalize_channel nch strip_channel sch find_timezone_name normalize_space find_bin get_english_list);
 	@EXPORT_OK	= qw();
 }
 
@@ -387,7 +386,7 @@ sub memory_substitute {
 	
 	while ($content =~ m/\[([\w\/\-\:]+)\s*\]/) {
 		my $param_name = $1;
-		$content =~ s/\[([\w\/\-\:]+)\s*\]/ memory_lookup($param_name, $args) /e;
+		$content =~ s/\[([\w\/\-\:]+)\s*\]/ memory_lookup($param_name, $args, 'noref') /e;
 	} # foreach simple tag
 	
 	return $content;
@@ -397,12 +396,16 @@ sub memory_lookup {
 	##
 	# Walk memory tree using virtual directory syntax and return value found
 	##
-	my ($param_name, $param) = @_;
+	my $param_name = shift;
+	my $param = shift;
+	my $noref = shift || 0;
 	
 	while (($param_name =~ s/^\/([\w\-\:]+)//) && ref($param)) {
-		if (isa($param, 'HASH')) { $param = $param->{$1}; }
-		elsif (isa($param, 'ARRAY')) { $param = ${$param}[$1]; }
+		if (ref($param) eq 'HASH') { $param = $param->{$1}; }
+		elsif (ref($param) eq 'ARRAY') { $param = ${$param}[$1]; }
 	}
+	
+	if (ref($param) && $noref) { $param = ''; }
 	
 	return $param;
 }
@@ -490,68 +493,6 @@ sub wget {
 	$useragent && $ua->agent( $useragent );
 
 	return $ua->request( HTTP::Request->new( 'GET', $url ) );
-}
-
-sub xml_to_javascript {
-	##
-	# Convert XML hash tree to JavaScript objects/arrays
-	# Does not include trailing semicolon, as in previous incarnations of this function
-	##
-	my $xml = shift;
-	my $indent = shift || 1;
-	my $args = {@_};
-	my $tabs = "\t" x $indent;
-	my $parent_tabs = '';
-	my $js = '';
-	my $eol = "\n";
-	
-	if (!defined($args->{lowercase})) { $args->{lowercase} = 1; }
-	if (!defined($args->{collapse_attribs})) { $args->{collapse_attribs} = 1; }
-	if (!defined($args->{compress})) { $args->{compress} = 0; }
-
-	if ($indent > 1) { $parent_tabs = "\t" x ($indent-1); }
-	if ($args->{compress}) { $parent_tabs = ''; $tabs = ''; $eol = ''; }
-	
-	if (isa($xml, 'HASH')) {
-		$js .= "{$eol";
-		my @keys = keys %$xml;
-		foreach my $key (@keys) {
-			if (ref($xml->{$key})) {
-				if (($key eq "_Attribs") && $args->{collapse_attribs}) {
-					foreach my $attrib_name (keys %{$xml->{'_Attribs'}}) { $xml->{$attrib_name} = $xml->{'_Attribs'}->{$attrib_name}; }
-					push @keys, keys %{$xml->{'_Attribs'}};
-					next;
-				}
-				$js .= $tabs . '"' . ($args->{lowercase} ? lc($key) : $key) . '": ' . xml_to_javascript($xml->{$key}, $indent + 1, %$args);
-			}
-			else {
-				my $value = escape_js($xml->{$key});
-				$js .= $tabs . '"' . ($args->{lowercase} ? lc($key) : $key) . '": ' . $value . ",$eol";
-			}
-		}
-		$js =~ s/\,$eol$/$eol/;
-		$js .= $parent_tabs . "},$eol";
-	}
-	elsif (isa($xml, 'ARRAY')) {
-		$js .= "[$eol";
-		foreach my $elem (@$xml) {
-			if (ref($elem)) {
-				$js .= $tabs . xml_to_javascript($elem, $indent + 1, %$args);
-			}
-			else {
-				my $value = escape_js($elem);
-				$js .= $tabs . $value . ",$eol";
-			}
-		}
-		$js =~ s/\,$eol$/$eol/;
-		$js .= $parent_tabs . "],$eol";
-	}
-
-	if ($indent == 1) {
-		$js =~ s/\,$eol$/$eol/;
-	}
-
-	return $js;
 }
 
 sub escape_js {
@@ -716,8 +657,8 @@ sub merge_hashes {
 	
 	foreach my $key (keys %$new_hash) {
 		if (ref($new_hash->{$key})) {
-			if (isa($new_hash->{$key}, 'HASH')) {
-				if (!defined($base_hash->{$key}) || !isa($base_hash->{$key}, 'HASH')) {
+			if (ref($new_hash->{$key}) eq 'HASH') {
+				if (!defined($base_hash->{$key}) || (ref($base_hash->{$key}) ne 'HASH')) {
 					$base_hash->{$key} = {};
 				}
 				merge_hashes( $base_hash->{$key}, $new_hash->{$key}, $replace_ok );
@@ -768,7 +709,7 @@ sub xml_post {
 	}
 
 	##
-	# Check for a successful response from Rimfire
+	# Check for a successful response
 	##
 	if ($response->is_success()) {
 		my $content = $response->content();
@@ -804,7 +745,7 @@ sub import_param {
 	$value = uri_unescape( $value );
 	
 	if ($operator->{$key}) {
-		if (isa($operator->{$key}, 'ARRAY')) {
+		if (ref($operator->{$key}) eq 'ARRAY') {
 			push @{$operator->{$key}}, $value;
 		}
 		else {
@@ -1566,7 +1507,6 @@ package XML::Lite;
 use strict;
 use FileHandle;
 use File::Basename;
-use UNIVERSAL qw/isa/;
 use vars qw/$VERSION/;
 
 my $defaults = {
@@ -1633,7 +1573,7 @@ sub importThingy {
 	undef $self->{file};
 	
 	if (ref($thingy)) {
-		if (isa($thingy, 'FileHandle')) {
+		if (ref($thingy) eq 'FileHandle') {
 			$self->{fh} = $thingy;
 		}
 		else {
@@ -1822,7 +1762,7 @@ sub parse {
 				# Add leaf to parent branch
 				##
 				if (defined($branch->{$nodeName})) {
-					if (isa($branch->{$nodeName}, 'ARRAY')) {
+					if (ref($branch->{$nodeName}) eq 'ARRAY') {
 						push @{$branch->{$nodeName}}, $leaf;
 					}
 					else {
@@ -2006,7 +1946,7 @@ sub composeNode {
 	##
 	# If branch is a hash reference, create node and walk keys
 	##
-	if (isa($branch, 'HASH')) {
+	if (ref($branch) eq 'HASH') {
 		##
 		# Compose indentation and opening tag
 		##
@@ -2122,7 +2062,7 @@ sub compose {
 	##
 	# Return composed XML if running in scalar mode, or 1 for success
 	##
-	if (isa($fh, 'XML::Lite::ScalarHandle')) { return $fh->fetch(); }
+	if (ref($fh) eq 'XML::Lite::ScalarHandle') { return $fh->fetch(); }
 
 	return 1;
 }
@@ -2320,7 +2260,7 @@ sub lookup {
 	if (!$tree) { $tree = $self->{tree}; }
 	
 	my $ref = $self->lookup_ref( $xpath, $tree );
-	if (defined($ref) && isa($ref, 'SCALAR')) { $ref = $$ref; } # dereference scalars
+	if (defined($ref) && (ref($ref) eq 'SCALAR')) { $ref = $$ref; } # dereference scalars
 	return $ref;
 }
 
@@ -2340,9 +2280,9 @@ sub set {
 	if (!defined($ref)) { return undef; } # lookup failed
 	if (ref($ref) ne ref($value_ref)) { return undef; } # type mismatch
 	
-	if (isa($ref, 'HASH')) { %$ref = %$value_ref; }
-	elsif (isa($ref, 'ARRAY')) { @$ref = @$value_ref; }
-	elsif (isa($ref, 'SCALAR')) { $$ref = $$value_ref; }
+	if (ref($ref) eq 'HASH') { %$ref = %$value_ref; }
+	elsif (ref($ref) eq 'ARRAY') { @$ref = @$value_ref; }
+	elsif (ref($ref) eq 'SCALAR') { $$ref = $$value_ref; }
 	else { return undef; } # unsupported type
 	
 	return 1;
@@ -2362,7 +2302,7 @@ sub lookup_ref {
 			# array index lookup, possibly complex attribute match
 			if (defined($tree->{$arr_matches->[1]})) {
 				$tree = $tree->{$arr_matches->[1]};
-				my $elements = $tree; if (!isa($tree, 'ARRAY')) { $elements = [$tree]; }
+				my $elements = $tree; if (ref($tree) ne 'ARRAY') { $elements = [$tree]; }
 				
 				if ($arr_matches->[2] =~ /^\d+$/) {
 					# simple array index lookup, i.e. /Parameter[2]
@@ -2429,6 +2369,8 @@ sub lookup_ref {
 
 	return $tree;
 }
+
+1;
 
 package XML::Lite::ScalarHandle;
 
