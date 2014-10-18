@@ -21,11 +21,13 @@ use Math::Units;
 use base qw( SimpleBot::Plugin );
 use Digest::MD5 qw(md5_hex md5);
 use Time::HiRes qw/time/;
+use MIME::Base64;
+use URI::Escape;
 use Tools;
 
 sub init {
 	my $self = shift;
-	$self->register_commands('calc', 'convert', 'rand', 'roll', 'dice', 'hash', 'md5', 'pick');
+	$self->register_commands('calc', 'convert', 'rand', 'roll', 'dice', 'hash', 'md5', 'pick', 'b64encode', 'b64decode', 'urlencode', 'urldecode');
 }
 
 sub pick {
@@ -49,17 +51,39 @@ sub pick {
 	if (!@$users) { return "$username: There are no users in $chan to choose from."; }
 	
 	my $chosen = $users->[ int(ultra_rand(scalar @$users)) ];
-	return "The chosen one is: $chosen";
+	return "$username: The chosen one is: $chosen";
+}
+
+sub urlencode {
+	# URL encode a string
+	my ($self, $msg, $args) = @_;
+	return "URL Encoded: " . uri_escape(trim($msg));
+}
+
+sub urldecode {
+	# URL decode a string
+	my ($self, $msg, $args) = @_;
+	return "URL Decoded: " . uri_unescape(trim($msg));
+}
+
+sub b64encode {
+	# base64 encode a string
+	my ($self, $msg, $args) = @_;
+	return "Base64 Encoded: " . encode_base64(trim($msg));
+}
+
+sub b64decode {
+	# base64 decode a string
+	my ($self, $msg, $args) = @_;
+	return "Base64 Decoded: " . decode_base64(trim($msg));
 }
 
 sub hash {
 	# generate md5 hash using provided string, or utterly random
 	my ($self, $msg, $args) = @_;
-	my $username = $args->{who};
-	my $chan = $args->{channel};
 	
 	if (!$msg) { $msg = time() . $$ . rand(1); }
-	return "MD5 Hash: " . md5_hex( $msg );
+	return "MD5: " . md5_hex( $msg );
 }
 sub md5 { return hash(@_); }
 
