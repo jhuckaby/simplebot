@@ -386,16 +386,21 @@ sub exec {
 	
 	$self->log_debug(6, "Executing shell command: $cmd");
 	
-	my $response = trim(`$cmd 2>&1`);
+	my $response = `$cmd 2>&1`;
+	$response = trim($response);
+	$self->log_debug(9, "Raw response: $response");
 	
 	if ($response =~ /\S/) {
 		foreach my $line (split(/\n/, $response)) {
 			if ($line =~ /\S/) {
+				if ($line =~ m@^/@) { $line = ' ' . $line; }
 				$args->{body} = $line;
+				$self->log_debug(9, "Saying: $line");
 				$self->{bot}->say( $args );
 			}
 		}
 	}
+	
 	return undef;
 }
 

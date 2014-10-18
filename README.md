@@ -42,25 +42,6 @@ This will install the latest stable version of SimpleBot.  Change the word "stab
 
 After installation, you will be provided instructions for connecting to a server for the first time.  If you are running our sister product, [SimpleIRC](https://github.com/jhuckaby/simpleirc), on the same server as SimpleBot, this will be detected and everything automatically set up and connected for you.
 
-## Copyright and Legal
-
-SimpleBot is copyright (c) 2013 - 2014 by Joseph Huckaby and PixlCore.com.  It is released under the MIT License (see below).
-
-SimpleBot relies on the following non-core Perl modules, which are automatically installed, along with their prerequisites, using [cpanm](http://cpanmin.us):
-
-* POE
-* Bot::BasicBot
-* JSON::XS
-* LWP::UserAgent
-* URI::Escape
-* HTTP::Date
-* DateTime
-* DateTime::TimeZone
-* DateTime::TimeZone::Alias
-* Net::Twitter::Lite
-* Net::Ping::External
-* Math::Units
-
 ### Plugin APIs
 
 The bot's Weather Plugin uses a free API available from WeatherUnderground.com.  You will need to sign up for a free account and get an API Key in order to use this Plugin.  For instructions, type "!help weather" in a channel where the bot is, or "/msg simplebot help weather" on the IRC console.
@@ -718,6 +699,25 @@ This uses the Yahoo Finance API to grab a stock quote for the given symbol.  It 
 
 	URBAN term
 This uses the Urban Dictionary API to locate a suitable definition for a term.  The result is emitted to the current channel.  Beware: Urban Dictionary can be very NSFW.  Use this at your own risk.  Remember, you can restrict access for any command to be owner only: !access set urban owner
+
+## Copyright and Legal
+
+SimpleBot is copyright (c) 2013 - 2014 by Joseph Huckaby and PixlCore.com.  It is released under the MIT License (see below).
+
+SimpleBot relies on the following non-core Perl modules, which are automatically installed, along with their prerequisites, using [cpanm](http://cpanmin.us):
+
+* POE
+* Bot::BasicBot
+* JSON::XS
+* LWP::UserAgent
+* URI::Escape
+* HTTP::Date
+* DateTime
+* DateTime::TimeZone
+* DateTime::TimeZone::Alias
+* Net::Twitter::Lite
+* Net::Ping::External
+* Math::Units
 
 ### MIT License
 
