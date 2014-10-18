@@ -4,6 +4,7 @@
 	
 	<Access>
 		<Default>op</Default>
+		<faqview>voice</faqview>
 	</Access>
 	
 	<Help>
@@ -14,14 +15,18 @@ FAQ - Register a custom FAQ command which can be recalled at any time.
 			<faq>
 FAQ command answer
 FAQ list
-FAQ delete NUMBER
+FAQ delete NAME
 -
-This registers a custom FAQ command and associates some text with it.  Then, users can recall the FAQ answer by entering the custom command just like any other bot command.  You can also use "!faq list" to get a list of all the FAQ commands for the current channel, and "!faq delete NUMBER" to delete them.  Examples:
+This registers a custom FAQ command and associates some text with it.  Then, users can recall the FAQ answer by entering the custom command just like any other bot command.  You can also use "!faq list" to get a list of all the FAQ commands for the current channel, and "!faq delete NAME" to delete them.  Examples:
 -
 !faq myserver Welcome to my server!  Please read the rules at http://myserver.com/rules/
 !myserver
 !faq list
-!faq delete 1
+!faq delete myserver
+-
+To control which users have access to view FAQs, set the access level for the 'faqview' pseudo-command, like this:
+-
+!access set faqview voice
 			</faq>
 		</Detail>
 	</Help>

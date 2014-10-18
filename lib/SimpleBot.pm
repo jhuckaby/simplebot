@@ -294,6 +294,7 @@ sub said {
 				$value = trim($value);
 				
 				$args->{is_command} = $cmd;
+				$args->{cmd_value} = $value;
 				
 				if (!$self->{_eb_commands}->{$cmd}) {
 					my $found = 0;
