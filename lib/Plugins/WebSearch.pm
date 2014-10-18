@@ -177,9 +177,9 @@ sub _google_image_search {
 	my ($self, $value) = @_;
 	my $items = [];
 	
-	my $url = 'http://www.google.com/uds/GimageSearch?callback=google.search.ImageSearch.RawCompletion&rsz=small&hl=en&gss=.com&sig=&q=' . 
-		uri_escape($value) . '&imgsz=small%7Cmedium%7Clarge%7Cxlarge&context=0&key=notsupplied&v=1.0';
-		
+	my $url = 'http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=' . 
+		uri_escape($value) . '&start=0';
+	
 	$self->log_debug(9, "Fetching Google Image Search URL: $url");
 	my $google = file_get_contents( $url );
 	
