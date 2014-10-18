@@ -154,9 +154,9 @@ sub calc {
 	my $chan = $args->{channel};
 	
 	my $orig_msg = $msg;
-	$msg =~ s/[^\d\+\-\*\/\(\)\%\^]+//g;
+	$msg =~ s/[^\d\.\+\-\*\/\(\)\%\^]+//g;
 	if (!$msg) { return "$username: Invalid syntax for calculator."; }
-		
+	
 	my $result = '';
 	eval {
 		eval '$result = ' . $msg . ';';
