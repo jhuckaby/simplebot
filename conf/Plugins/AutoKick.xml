@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Version>1.0</Version>
+	
+	<Access>
+		<Default>op</Default>
+	</Access>
+	
+	<KickMessage>Thou uttered one of the forbidden texts!</KickMessage>
+	
+	<Help>
+		<Brief>
+AUTOKICK - Add, delete or list phrases that automatically kick users when spoken.
+		</Brief>
+		<Detail>
+			<autokick>
+AUTOKICK add BADWORD
+AUTOKICK delete BADWORD
+AUTOKICK list
+-
+This allows you to set special words or phrases (regular expressions) that will automatically kick users if spoken.  Use '!autokick add WORD' to add a word or phrase to the list, '!autokick delete WORD' to remove one, and '!autokick list' to list them all.  The list is channel specific.
+-
+To change the message sent to users as they are kicked out, use this command:
+-
+!config set AutoKick/KickMessage Your Message Here
+			</autokick>
+		</Detail>
+	</Help>
+</PluginConfig>

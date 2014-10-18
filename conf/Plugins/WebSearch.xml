@@ -39,7 +39,9 @@ Note that this is optional, and the DEFINE command works just fine with Wikipedi
 			</define>
 			<spell>
 SPELL word
-This command uses the free API provided by DictionaryAPI.com (Merriam-Webster) to check the spelling of a word.  If the word cannot be found in the dictionary, spelling suggestions are provided.  Please note that this API requires a free API key.  Sign up at http://www.dictionaryapi.com/ and then configure your API key with this command: !config set WebSearch/DictAPIKey YOUR_API_KEY_HERE
+This command uses the free API provided by DictionaryAPI.com (Merriam-Webster) to check the spelling of a word.  If the word cannot be found in the dictionary, spelling suggestions are provided.  Please note that this API requires a free API key.  Sign up at http://www.dictionaryapi.com/ and then configure your API key with this command: 
+-
+!config set WebSearch/DictAPIKey YOUR_API_KEY_HERE
 			</spell>
 			<urban>
 URBAN term

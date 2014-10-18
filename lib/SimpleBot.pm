@@ -286,11 +286,14 @@ sub said {
 		elsif ($args->{channel} eq 'msg') {
 			$is_command = 1;
 		}
+		
 		if ($is_command) {
 			if ($text =~ /^(\w+)(.*)$/) {
 				my ($cmd, $value) = ($1, $2);
 				$cmd = lc($cmd);
 				$value = trim($value);
+				
+				$args->{is_command} = $cmd;
 				
 				if (!$self->{_eb_commands}->{$cmd}) {
 					my $found = 0;
