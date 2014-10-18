@@ -17,6 +17,7 @@ DEFINE - Define term using the Wikipedia API or DictionaryAPI.com.
 SPELL - Spell check a word (uses DictionaryAPI.com).
 URBAN - Define term using the Urban Dictionary API.
 STOCK - Grab stock quote given company symbol (uses Yahoo Finance API).
+BITCOIN - Lookup the current price of Bitcoin in USD.
 		</Brief>
 		<Detail>
 			<google>
@@ -51,6 +52,11 @@ This uses the Urban Dictionary API to locate a suitable definition for a term.  
 STOCK symbol
 This uses the Yahoo Finance API to grab a stock quote for the given symbol.  It reports the current price and change.  Example: !stock GOOG
 			</stock>
+			<bitcoin>
+BITCOIN
+BTC
+Lookup the current price of Bitcoin in US dollars.  This uses a free API from BitStamp.net.
+			</bitcoin>
 		</Detail>
 	</Help>
 </PluginConfig>

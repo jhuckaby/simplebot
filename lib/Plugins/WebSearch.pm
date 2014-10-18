@@ -16,7 +16,7 @@ use Encode qw(decode encode);
 
 sub init {
 	my $self = shift;
-	$self->register_commands('google', 'define', 'image', 'stock', 'urban', 'spell');
+	$self->register_commands('google', 'define', 'image', 'stock', 'btc', 'bitcoin', 'urban', 'spell');
 }
 
 sub google {
@@ -403,6 +403,40 @@ sub stock {
 		} # sub
 	);
 }
+
+sub btc {
+	# Check Bitcoin price via bitstamp.net free API
+	my ($self, $value, $args) = @_;
+	
+	$self->log_debug(9, "Forking for BitStamp API...");
+	
+	$self->{bot}->forkit(
+		channel => nch( $args->{channel} ),
+		handler => '_fork_utf8_said',
+		run => sub {
+			eval {
+				# http://www.bitstamp.net/api/ticker/
+				# {"high": "395.00", "last": "390.00", "timestamp": "1413659163", "bid": "389.90", "vwap": "386.0", "volume": "7847.64414815", "low": "377.00", "ask": "390.00"}
+				
+				my $url = 'http://www.bitstamp.net/api/ticker/';
+				$self->log_debug(9, "Fetching BitStamp URL: $url");
+				
+				my $json_raw = trim(file_get_contents($url));
+				$self->log_debug(9, "Raw result: $json_raw");
+				
+				my $json = eval { json_parse( $json_raw ); };
+				if ($json && $json->{last}) {
+					print "Bitcoin price is currently: \$" . $json->{last} . " USD for 1 BTC.\n";
+				}
+				else {
+					print "ERROR: Could not determine Bitcoin price (is BitStamp.net down?)\n";
+				}
+			}; # eval
+			if ($@) { $self->log_debug(1, "CHILD CRASH btc: $@"); }
+		} # sub
+	);
+}
+sub bitcoin { btc(@_); }
 
 sub urban {
 	# Urban Dictionary term search
