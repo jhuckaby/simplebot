@@ -29,6 +29,7 @@ ROTTEN - Lookup movie ratings from RottenTomatoes.com.
 PLOT - Lookup movie plot (synopsis) from RottenTomatoes.com.
 CAST - Lookup movie cast from RottenTomatoes.com.
 BEER - Lookup beer information from BreweryDB.com.
+NEWS - Lookup news for a specific topic, using the Google News API.
 		</Brief>
 		<Detail>
 			<google>
@@ -91,6 +92,10 @@ Use this command to lookup beer information from BreweryDB.com.  Please note tha
 -
 !config set WebSearch/BeerAPIKey YOUR_API_KEY_HERE
 			</beer>
+			<news>
+NEWS topic
+Lookup news for a particlar topic, using the free Google News API.  The article source, title, link, and summary are emitted to the channel.
+			</news>
 		</Detail>
 	</Help>
 </PluginConfig>

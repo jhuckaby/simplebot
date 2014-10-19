@@ -16,7 +16,7 @@ use Encode qw(decode encode);
 
 sub init {
 	my $self = shift;
-	$self->register_commands('google', 'define', 'image', 'stock', 'btc', 'bitcoin', 'urban', 'spell', 'reddit', 'r', 'rotten', 'movie', 'synopsis', 'plot', 'cast', 'beer');
+	$self->register_commands('google', 'define', 'image', 'stock', 'btc', 'bitcoin', 'urban', 'spell', 'reddit', 'r', 'rotten', 'movie', 'synopsis', 'plot', 'cast', 'beer', 'news');
 }
 
 sub google {
@@ -678,6 +678,52 @@ sub beer {
 				}
 			}; # eval
 			if ($@) { $self->log_debug(1, "CHILD CRASH beer: $@"); }
+		} # sub
+	);
+}
+
+sub news {
+	# get random news article from Google News
+	my ($self, $value, $args) = @_;
+	my $username = $args->{who};
+	
+	return undef unless $value;
+	
+	$self->log_debug(9, "Forking for Google News API...");
+	
+	$self->{bot}->forkit(
+		channel => nch( $args->{channel} ),
+		handler => '_fork_utf8_said',
+		run => sub {
+			eval {
+				# http://ajax.googleapis.com/ajax/services/search/news?v=1.0&rsz=5&q=minecraft
+				
+				my $url = 'http://ajax.googleapis.com/ajax/services/search/news?v=1.0&rsz=5&q='.uri_escape($value);
+				$self->log_debug(9, "Fetching Google News URL: $url");
+				
+				my $json_raw = trim(file_get_contents($url));
+				$self->log_debug(9, "Raw result: $json_raw");
+				
+				my $json = eval { json_parse( $json_raw ); };
+				if ($json && $json->{responseData} && $json->{responseData}->{results}) {
+					my $article = rand_array( $json->{responseData}->{results} );
+					my $resp = '';
+					
+					$resp .= $article->{publisher} . ": ";
+					$resp .= $article->{titleNoFormatting} . ": ";
+					$resp .= $article->{unescapedUrl} . "\n";
+					
+					my $body = $article->{content};
+					$body =~ s/<.+?>//sg; $body =~ s/\&\#?\w+\;//g;
+					$resp .= $body;
+					
+					print trim($resp) . "\n";
+				}
+				else {
+					print "No news found for: $value\n";
+				}
+			}; # eval
+			if ($@) { $self->log_debug(1, "CHILD CRASH news: $@"); }
 		} # sub
 	);
 }
