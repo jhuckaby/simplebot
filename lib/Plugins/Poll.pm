@@ -72,8 +72,6 @@ sub poll {
 		
 		if (!$title) { return "$username: You need to specify a topic for your poll."; }
 		
-		if ($poll->{total_votes}) { $self->archive_poll($poll); }
-		
 		$self->log_debug(8, "New poll opened by $username: $title");
 		
 		$poll->{open} = 1;
@@ -101,6 +99,8 @@ sub poll {
 		if (!$poll->{open}) { return "$username: There is no poll currently open."; }
 		
 		$poll->{open} = 0;
+		if ($poll->{total_votes}) { $self->archive_poll($poll); }
+		
 		$self->dirty(1);
 		
 		$self->say( channel => nch($chan), body => "The poll is now closed.  Thanks for your votes!" );
