@@ -15,6 +15,7 @@ RAND - Generate a random number given a maximum or range.
 ROLL - Roll dice for use in Roll Playing Games, such as Dungeons &amp; Dragons.
 HASH - Generate MD5 hash of string, or a random source.
 PICK - Pick a random user from the channel, and notify them.
+8BALL - Ask the magic 8-ball a question.
 		</Brief>
 		<Detail>
 			<calc>

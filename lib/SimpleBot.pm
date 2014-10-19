@@ -314,6 +314,11 @@ sub said {
 							if ($plugin->can($cmd)) {
 								$response = $plugin->$cmd( $value, $args );
 							}
+							elsif ($plugin->can("_$cmd")) {
+								# for subs that start with digits
+								$cmd = "_$cmd";
+								$response = $plugin->$cmd( $value, $args );
+							}
 							else {
 								$response = $plugin->handler( $cmd, $value, $args );
 							}
