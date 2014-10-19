@@ -98,7 +98,7 @@ sub tick {
 					my $num_new_quakes = 0;
 					
 					foreach my $quake (@$quakes) {
-						if (!$self->{data}->{quakes}->{ $quake->{id} }) {
+						if ((!$self->{data}->{quakes}->{ $quake->{id} }) && !$add_ids->{ $quake->{id} }) {
 							# new quake!!!
 							$add_ids->{ $quake->{id} } = 1;
 							$num_actions++;
