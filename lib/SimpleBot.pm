@@ -210,6 +210,19 @@ sub init {
 	# keep track of which users are in which channels (use RAM)
 	$self->{_eb_channels} = {};
 	
+	# load bad word list for plugins to use
+	my $words = [];
+	foreach my $line (split(/\n/, load_file('conf/bad_words.txt') || '')) {
+		if ($line =~ /\S/) {
+			$line = trim($line);
+			$line =~ s/([^\w\s])/\\$1/g;
+			push @$words, $line;
+		}
+	}
+	if (scalar @$words) {
+		$self->{bad_word_match} = "\\b(" . join("|", @$words) . ")s?\\b";
+	}
+	
 	return 1;
 }
 

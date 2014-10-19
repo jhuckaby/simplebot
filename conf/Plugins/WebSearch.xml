@@ -11,6 +11,9 @@
 	<!-- API Key for BreweryDB.com -->
 	<BeerAPIKey></BeerAPIKey>
 	
+	<!-- Optionally filter bad words in Urban Dictionary responses -->
+	<UrbanBadWordFilter>0</UrbanBadWordFilter>
+	
 	<Access>
 		<Default>voice</Default>
 	</Access>

@@ -485,6 +485,12 @@ sub urban {
 					}
 					$response = trim($new_response);
 					
+					# filter bad words if desired
+					if ($self->{config}->{UrbanBadWordFilter}) {
+						my $regexp = $self->{bot}->{bad_word_match};
+						$response =~ s@$regexp@****@g;
+					}
+					
 					# squeeze URL onto end
 					if (length($response) >= 500 - length($urban_url)) {
 						$response = substr($response, 0, 500 - length($urban_url));
