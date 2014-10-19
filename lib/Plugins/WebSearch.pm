@@ -16,7 +16,7 @@ use Encode qw(decode encode);
 
 sub init {
 	my $self = shift;
-	$self->register_commands('google', 'define', 'image', 'stock', 'btc', 'bitcoin', 'urban', 'spell', 'reddit', 'r', 'rotten', 'movie', 'synopsis', 'plot', 'cast', 'beer', 'news');
+	$self->register_commands('google', 'define', 'image', 'stock', 'btc', 'bitcoin', 'urban', 'spell', 'reddit', 'r', 'rotten', 'movie', 'synopsis', 'plot', 'cast', 'beer', 'news', 'xkcd');
 }
 
 sub google {
@@ -724,6 +724,44 @@ sub news {
 				}
 			}; # eval
 			if ($@) { $self->log_debug(1, "CHILD CRASH news: $@"); }
+		} # sub
+	);
+}
+
+sub xkcd {
+	# get latest xkcd comic
+	my ($self, $value, $args) = @_;
+	my $username = $args->{who};
+		
+	$self->log_debug(9, "Forking for XKCD API...");
+	
+	$self->{bot}->forkit(
+		channel => nch( $args->{channel} ),
+		handler => '_fork_utf8_said',
+		run => sub {
+			eval {
+				# http://xkcd.com/info.0.json
+				
+				my $url = 'http://xkcd.com/info.0.json';
+				$self->log_debug(9, "Fetching XKCD URL: $url");
+				
+				my $json_raw = trim(file_get_contents($url));
+				$self->log_debug(9, "Raw result: $json_raw");
+				
+				my $json = eval { json_parse( $json_raw ); };
+				if ($json && $json->{img}) {
+					my $resp = '';
+					
+					$resp .= $json->{title} . ": ";
+					$resp .= $json->{img};
+					
+					print trim($resp) . "\n";
+				}
+				else {
+					print "No xkcd comic found!\n";
+				}
+			}; # eval
+			if ($@) { $self->log_debug(1, "CHILD CRASH xkcd: $@"); }
 		} # sub
 	);
 }

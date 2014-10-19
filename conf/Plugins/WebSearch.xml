@@ -30,6 +30,7 @@ PLOT - Lookup movie plot (synopsis) from RottenTomatoes.com.
 CAST - Lookup movie cast from RottenTomatoes.com.
 BEER - Lookup beer information from BreweryDB.com.
 NEWS - Lookup news for a specific topic, using the Google News API.
+XKCD - Grab latest comic title and image from xkcd.com.
 		</Brief>
 		<Detail>
 			<google>
@@ -82,7 +83,7 @@ ROTTEN movie
 MOVIE movie
 PLOT movie
 CAST movie
-Use these commands to lookup movie ratings, synopsis and cast using the RottenTomatoes.com website.  Please note that this API requires a free API key.  Sign up at http://developer.rottentomatoes.com/ and then configure your API key with this command: 
+Use these commands to lookup movie ratings, synopsis and cast using the RottenTomatoes.com API.  Please note that this API requires a free API key.  Sign up at http://developer.rottentomatoes.com/ and then configure your API key with this command: 
 -
 !config set WebSearch/RottenAPIKey YOUR_API_KEY_HERE
 			</rotten>
@@ -96,6 +97,10 @@ Use this command to lookup beer information from BreweryDB.com.  Please note tha
 NEWS topic
 Lookup news for a particlar topic, using the free Google News API.  The article source, title, link, and summary are emitted to the channel.
 			</news>
+			<xkcd>
+XKCD
+This grabs the latest comic title and image from xkcd.com.
+			</xkcd>
 		</Detail>
 	</Help>
 </PluginConfig>
