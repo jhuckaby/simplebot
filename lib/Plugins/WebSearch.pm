@@ -717,12 +717,16 @@ sub news {
 					my $article = rand_array( $json->{responseData}->{results} );
 					my $resp = '';
 					
+					$article->{titleNoFormatting} =~ s/\&\#(\d+)\;/ chr($1); /eg;
+					
 					$resp .= $article->{publisher} . ": ";
 					$resp .= $article->{titleNoFormatting} . ": ";
 					$resp .= $article->{unescapedUrl} . "\n";
 					
 					my $body = $article->{content};
-					$body =~ s/<.+?>//sg; $body =~ s/\&\#?\w+\;//g;
+					$body =~ s/<.+?>//sg; 
+					$body =~ s/\&\#(\d+)\;/ chr($1); /eg;
+					$body =~ s/\&\#?\w+\;//g;
 					$resp .= $body;
 					
 					print trim($resp) . "\n";
