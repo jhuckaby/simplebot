@@ -222,7 +222,7 @@ sub define {
 			eval {
 				my $response = '';
 				
-				# No response?  Try dictionaryapi.com too, if we have an API key
+				# No response?  Try dictionaryapi.com, if we have an API key
 				if (!$response && $self->{config}->{DictAPIKey} && ($value =~ /^\w+$/)) {
 					my $url = 'http://www.dictionaryapi.com/api/v1/references/collegiate/xml/'.lc($value).'?key=' . $self->{config}->{DictAPIKey};
 					$self->log_debug(9, "Fetching URL: $url");
@@ -274,9 +274,9 @@ sub define {
 									
 									# only one sentence needed
 									my $new_response = '';
-									foreach my $sentence (split(/\.\s*/, $response)) {
+									foreach my $sentence (split(/\.\s+/, $response)) {
 										$new_response .= $sentence . ". ";
-										last if (length($new_response) >= 50);
+										last if (length($new_response) >= 100);
 									}
 									$response = trim($new_response);
 									
