@@ -283,10 +283,34 @@ sub get_last_tweet {
 		# $tweet->{text} =~ s@([\x01-\x08\x0B-\x0C\x0E-\x1F\x80-\xFF])@@g;
 		# $tweet->{text} = encode('UTF-8', $tweet->{text}, Encode::FB_QUIET);
 		$tweet->{text} = decode_entities($tweet->{text});
+		
+		# Resolve shortened URLs, i.e. http://t.co/N53Psnbi1S
+		$tweet->{text} =~ s@(\w+\:\/\/t\.co\/\w+)@ follow_url_redirects($1); @eg;
+		
 		return $tweet;
 	}
 	
 	return undef;
+}
+
+sub follow_url_redirects {
+	# follow url redirect and return final URL
+	my $url = shift;
+	my $done = 0;
+	my $count = 0;
+	
+	while (!$done) {
+		my $ua = LWP::UserAgent->new( max_redirect => 0 );
+		my $resp = $ua->request( HTTP::Request->new( 'HEAD', $url ) );
+		my $code = $resp->code();
+		if (($code =~ /3\d\d/) && $resp->header('Location')) {
+			$url = $resp->header('Location');
+			$count++; if ($count > 2) { $done = 1; }
+		}
+		else { $done = 1; }
+	}
+	
+	return $url;
 }
 
 1;
