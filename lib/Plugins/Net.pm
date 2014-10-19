@@ -21,7 +21,7 @@ use Tools;
 
 sub init {
 	my $self = shift;
-	$self->register_commands('ping', 'dns', 'host', 'head', 'whead', 'http', 'sniff', 'url', 'tcp', 'connect', 'telnet');
+	$self->register_commands('ping', 'dns', 'host', 'head', 'whead', 'http', 'sniff', 'url', 'wget', 'tcp', 'connect', 'telnet');
 }
 
 sub ping {
@@ -132,6 +132,7 @@ sub whead { return head(@_); }
 sub http { return head(@_); }
 sub sniff { return head(@_); }
 sub url { return head(@_); }
+sub wget { return head(@_); }
 
 sub tcp {
 	# try tcp connect on host/ip and port
