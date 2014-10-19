@@ -16,7 +16,7 @@ use Encode qw(decode encode);
 
 sub init {
 	my $self = shift;
-	$self->register_commands('google', 'define', 'image', 'stock', 'btc', 'bitcoin', 'urban', 'spell', 'reddit', 'r');
+	$self->register_commands('google', 'define', 'image', 'stock', 'btc', 'bitcoin', 'urban', 'spell', 'reddit', 'r', 'rotten', 'movie', 'synopsis', 'plot', 'cast');
 }
 
 sub google {
@@ -543,5 +543,79 @@ sub reddit {
 	);
 }
 sub r { return reddit(@_); }
+
+sub rotten {
+	# get movie info from rotten tomatoes (requires free API Key)
+	my ($self, $value, $args) = @_;
+	my $username = $args->{who};
+	
+	return undef unless $value;
+	
+	if (!$self->{config}->{RottenAPIKey}) {
+		return "$username: No API key is set for RottenTomatoes.com.  Please type: !help rotten";
+	}
+	
+	$self->log_debug(9, "Forking for Rotten Tomatoes API...");
+	
+	$self->{bot}->forkit(
+		channel => nch( $args->{channel} ),
+		handler => '_fork_utf8_said',
+		run => sub {
+			eval {
+				# http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=...&q=Toy+Story+3&page_limit=1
+				
+				my $url = 'http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey='.$self->{config}->{RottenAPIKey}.'&q='.uri_escape($value).'&page_limit=1';
+				$self->log_debug(9, "Fetching Rotten URL: $url");
+				
+				my $json_raw = trim(file_get_contents($url));
+				$self->log_debug(9, "Raw result: $json_raw");
+				
+				my $json = eval { json_parse( $json_raw ); };
+				if ($json && $json->{movies}) {
+					my $movie = $json->{movies}->[0];
+					my $resp = '';
+					
+					$resp .= $movie->{title} . " (" . $movie->{year} . ", Rated " . $movie->{mpaa_rating} . ")";
+					if ($args->{synopsis}) {
+						$resp .= ": " . $movie->{synopsis};
+					}
+					elsif ($args->{cast}) {
+						my $members = [];
+						foreach my $member (@{$movie->{abridged_cast}}) {
+							push @$members, $member->{name};
+						}
+						$resp .= ": " . join(', ', @$members);
+					}
+					else {
+						$resp .= ": Critics Score: " . $movie->{ratings}->{critics_score} . '%';
+						$resp .= ", Audience Score: " . $movie->{ratings}->{audience_score} . '%';
+					}
+					
+					print "$resp\n";
+				}
+				else {
+					print "No movie found for: $value\n";
+				}
+			}; # eval
+			if ($@) { $self->log_debug(1, "CHILD CRASH reddit: $@"); }
+		} # sub
+	);
+}
+sub movie { return rotten(@_); }
+
+sub synopsis {
+	# get movie synopsis
+	my ($self, $value, $args) = @_;
+	$args->{synopsis} = 1;
+	return $self->rotten( $value, $args );
+}
+sub plot { return synopsis(@_); }
+
+sub cast {
+	# get movie cast
+	my ($self, $value, $args) = @_;
+	$args->{cast} = 1;
+	return $self->rotten( $value, $args );
+}
 
 1;

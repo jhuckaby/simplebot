@@ -5,6 +5,9 @@
 	<!-- API Key for dictionaryapi.com -->
 	<DictAPIKey></DictAPIKey>
 	
+	<!-- API Key for RottenTomatoes.com -->
+	<RottenAPIKey></RottenAPIKey>
+	
 	<Access>
 		<Default>voice</Default>
 	</Access>
@@ -19,6 +22,9 @@ URBAN - Define term using the Urban Dictionary API.
 STOCK - Grab stock quote given company symbol (uses Yahoo Finance API).
 BITCOIN - Lookup the current price of Bitcoin in USD.
 REDDIT - Output random image from front page of selected subreddit.
+ROTTEN - Lookup movie ratings from RottenTomatoes.com.
+PLOT - Lookup movie plot (synopsis) from RottenTomatoes.com.
+CAST - Lookup movie cast from RottenTomatoes.com.
 		</Brief>
 		<Detail>
 			<google>
@@ -66,6 +72,15 @@ Pick a random image from the front page of the specified subreddit, and output t
 !reddit earthporn
 !r aww
 			</reddit>
+			<rotten>
+ROTTEN movie
+MOVIE movie
+PLOT movie
+CAST movie
+Use these commands to lookup movie ratings, synopsis and cast using the RottenTomatoes.com website.  Please note that this API requires a free API key.  Sign up at http://developer.rottentomatoes.com/ and then configure your API key with this command: 
+-
+!config set WebSearch/RottenAPIKey YOUR_API_KEY_HERE
+			</rotten>
 		</Detail>
 	</Help>
 </PluginConfig>
