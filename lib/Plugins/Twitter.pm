@@ -98,6 +98,7 @@ sub rt {
 			eval {
 				my $tweet = $self->get_last_tweet($username);
 				if ($tweet) {
+					if ($tweet->{user} && $tweet->{user}->{screen_name}) { $username = $tweet->{user}->{screen_name}; }
 					$self->log_debug(9, "Retweeting: $username: " . $tweet->{text});
 					print 'RT @' . $username . " " . encode('UTF-8', $tweet->{text}, Encode::FB_QUIET) . "\n"; 
 				}
@@ -218,6 +219,7 @@ sub tick {
 								username => $username,
 								new_tweet_id => $tweet->{id}
 							} );
+							if ($tweet->{user} && $tweet->{user}->{screen_name}) { $username = $tweet->{user}->{screen_name}; }
 							print 'RT @' . $username . " " . encode('UTF-8', $tweet->{text}, Encode::FB_QUIET) . "\n";
 						} # new tweet!
 						else {
@@ -254,10 +256,39 @@ sub ntu {
 	return $username;
 }
 
+sub get_last_hashtag {
+	# get latest tweet for specified hashtag (or any search term)
+	my ($self, $search_text) = @_;
+	
+	my $result = undef;
+	eval {
+		$result = $self->{twitter}->search($search_text);
+	};
+	if ($@) {
+		$self->log_debug(4, "Twitter API Fail: $search_text: $@");
+		return undef;
+	}
+	
+	if ($result && $result->{statuses} && (scalar @{$result->{statuses}})) {
+		my $tweet = shift @{$result->{statuses}};
+		$tweet->{text} = decode_entities($tweet->{text});
+		
+		# Resolve shortened URLs, i.e. http://t.co/N53Psnbi1S
+		$tweet->{text} =~ s@(\w+\:\/\/t\.co\/\w+)@ follow_url_redirects($1); @eg;
+		
+		return $tweet;
+	}
+	
+	return undef;
+}
+
 sub get_last_tweet {
 	# get last tweet for specified username
 	my ($self, $username) = @_;
 	$username = ntu($username);
+	
+	# support hashtags as well as users
+	if ($username =~ /^\#/) { return $self->get_last_hashtag($username); }
 	
 	my $result = undef;
 	eval {
@@ -274,14 +305,8 @@ sub get_last_tweet {
 		return undef;
 	}
 
-	# use Data::Dumper;
-	# print Dumper $result;
-	# exit;
-	
 	if ($result && ref($result) && (scalar @$result)) {
 		my $tweet = shift @$result;
-		# $tweet->{text} =~ s@([\x01-\x08\x0B-\x0C\x0E-\x1F\x80-\xFF])@@g;
-		# $tweet->{text} = encode('UTF-8', $tweet->{text}, Encode::FB_QUIET);
 		$tweet->{text} = decode_entities($tweet->{text});
 		
 		# Resolve shortened URLs, i.e. http://t.co/N53Psnbi1S

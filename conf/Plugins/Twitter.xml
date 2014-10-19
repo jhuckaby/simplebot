@@ -16,31 +16,34 @@
 	<Help>
 		<Brief>
 TWITTER - Follow people on twitter, or retweet someone's latest tweet.
-RT - Retweet the last tweet of any Twitter username.
-FOLLOW - Start following a Twitter username in the current channel.
-UNFOLLOW - Stop following a Twitter username in the current channel.
-FOLLOWING - List all users we are current following on Twitter.
+RT - Retweet the last tweet of any Twitter username or #hashtag.
+FOLLOW - Start following a Twitter username or #hashtag in the current channel.
+UNFOLLOW - Stop following a Twitter username or #hashtag in the current channel.
+FOLLOWING - List all users and/or #hashtags we are current following on Twitter.
 		</Brief>
 		<Detail>
 			<rt>
 RT @username
+RT #hashtag
 -
-Retweet the last tweet of the specified Twitter username.  Will omit @replies and RTs by the user.
+Retweet the last tweet of the specified Twitter username or #hashtag.  Will omit @replies and RTs by the user.
 			</rt>
 			<follow>
 FOLLOW @username
+FOLLOW #hashtag
 -
-Starts following @username's tweets on Twitter, and automatically echos them into the current channel.  Will omit @replies and RTs by the user.  Please note that due to Twitter API throttling, the bot can only check one per user's timeline once per minute, so if the bot is following 2 people, it may take up to 2 minutes to see new tweets from either of them.
+Starts following @username's tweets (or tweets for a #hashtag) on Twitter, and automatically echos them into the current channel.  Will omit @replies and RTs by the user.  Please note that due to Twitter API throttling, the bot can only check one per user's timeline once per minute, so if the bot is following 2 people, it may take up to 2 minutes to see new tweets from either of them.
 			</follow>
 			<unfollow>
 UNFOLLOW @username
+UNFOLLOW #hashtag
 -
-Stop following @username's tweets in the current channel.
+Stop following @username's tweets (or all tweets from a #hashtag) in the current channel.
 			</unfollow>
 			<following>
 FOLLOWING
 -
-List all users we are currently following on Twitter, and in which channels.
+List all users and/or hashtags we are currently following on Twitter, and in which channels.
 			</following>
 			<twitter>
 TWITTER RT - Retweet the last tweet of any Twitter username into the current channel.
