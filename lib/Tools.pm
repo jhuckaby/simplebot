@@ -927,7 +927,7 @@ sub probably {
 	# 0.0 will never return true
 	##
 	if (!defined($_[0])) { return 1; }
-	return ( rand(1) < $_[0] ) ? 1 : 0;
+	return ( ultra_rand(1) < $_[0] ) ? 1 : 0;
 }
 
 sub rand_array {
@@ -935,7 +935,7 @@ sub rand_array {
 	# Pick random element from array ref
 	##
 	my $array = shift;
-	return $array->[ int(rand(scalar @$array)) ];
+	return $array->[ int(ultra_rand(scalar @$array)) ];
 }
 
 sub ultra_rand {

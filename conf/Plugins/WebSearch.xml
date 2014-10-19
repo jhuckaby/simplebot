@@ -18,6 +18,7 @@ SPELL - Spell check a word (uses DictionaryAPI.com).
 URBAN - Define term using the Urban Dictionary API.
 STOCK - Grab stock quote given company symbol (uses Yahoo Finance API).
 BITCOIN - Lookup the current price of Bitcoin in USD.
+REDDIT - Output random image from front page of selected subreddit.
 		</Brief>
 		<Detail>
 			<google>
@@ -57,6 +58,14 @@ BITCOIN
 BTC
 Lookup the current price of Bitcoin in US dollars.  This uses a free API from BitStamp.net.
 			</bitcoin>
+			<reddit>
+REDDIT subreddit
+R subreddit
+Pick a random image from the front page of the specified subreddit, and output the image URL.  Examples:
+-
+!reddit earthporn
+!r aww
+			</reddit>
 		</Detail>
 	</Help>
 </PluginConfig>

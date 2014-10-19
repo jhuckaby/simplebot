@@ -16,7 +16,7 @@ use Encode qw(decode encode);
 
 sub init {
 	my $self = shift;
-	$self->register_commands('google', 'define', 'image', 'stock', 'btc', 'bitcoin', 'urban', 'spell');
+	$self->register_commands('google', 'define', 'image', 'stock', 'btc', 'bitcoin', 'urban', 'spell', 'reddit', 'r');
 }
 
 sub google {
@@ -222,6 +222,22 @@ sub define {
 			eval {
 				my $response = '';
 				
+				# No response?  Try dictionaryapi.com too, if we have an API key
+				if (!$response && $self->{config}->{DictAPIKey} && ($value =~ /^\w+$/)) {
+					my $url = 'http://www.dictionaryapi.com/api/v1/references/collegiate/xml/'.lc($value).'?key=' . $self->{config}->{DictAPIKey};
+					$self->log_debug(9, "Fetching URL: $url");
+					my $dict_raw = file_get_contents( $url );
+					
+					if ($dict_raw =~ m@<dt>(.+?)</dt>@s) {
+						my $def_raw = $1; $def_raw =~ s/<.+?>//sg; $def_raw =~ s/^\W+//;
+						$response .= ucfirst($value);
+						if ($dict_raw =~ m@<fl>(.+?)</fl>@) { $response .= " ($1)"; }
+						$response .= ": " . ucfirst($def_raw);
+						$response = trim($response);
+						if ($response !~ /\W$/) { $response .= "."; }
+					}
+				}
+				
 				if (!$response) {
 					# Try google to get exact wikipedia article name (case sensitive)
 					my $items = $self->_google_search($value . " site:wikipedia.org");
@@ -275,22 +291,6 @@ sub define {
 						} # good wiki title
 					} # first google result is a wiki
 				} # need google / wiki search
-				
-				# No response?  Try dictionaryapi.com too, if we have an API key
-				if (!$response && $self->{config}->{DictAPIKey} && ($value =~ /^\w+$/)) {
-					my $url = 'http://www.dictionaryapi.com/api/v1/references/collegiate/xml/'.lc($value).'?key=' . $self->{config}->{DictAPIKey};
-					$self->log_debug(9, "Fetching URL: $url");
-					my $dict_raw = file_get_contents( $url );
-					
-					if ($dict_raw =~ m@<dt>(.+?)</dt>@s) {
-						my $def_raw = $1; $def_raw =~ s/<.+?>//sg; $def_raw =~ s/^\W+//;
-						$response .= ucfirst($value);
-						if ($dict_raw =~ m@<fl>(.+?)</fl>@) { $response .= " ($1)"; }
-						$response .= ": " . ucfirst($def_raw);
-						$response = trim($response);
-						if ($response !~ /\W$/) { $response .= "."; }
-					}
-				}
 				
 				if ($response) {
 					print encode('UTF-8', $response, Encode::FB_QUIET) . "\n";
@@ -494,5 +494,54 @@ sub urban {
 		} # sub
 	);
 }
+
+sub reddit {
+	# random imgur image from front page of subreddit
+	my ($self, $value, $args) = @_;
+	my $username = $args->{who};
+	
+	return undef unless $value;
+	
+	$self->log_debug(9, "Forking for Reddit API...");
+	
+	$self->{bot}->forkit(
+		channel => nch( $args->{channel} ),
+		handler => '_fork_utf8_said',
+		run => sub {
+			eval {
+				# http://www.reddit.com/r/aww.json
+				my $image_url = '';
+				my $url = 'http://www.reddit.com/r/'.$value.'.json';
+				$self->log_debug(9, "Fetching Reddit URL: $url");
+				
+				my $json_raw = trim(file_get_contents($url));
+				# $self->log_debug(9, "Raw result: $json_raw");
+				
+				my $json = eval { json_parse( $json_raw ); };
+				if ($json && $json->{data} && $json->{data}->{children}) {
+					my $urls = [];
+					foreach my $child (@{$json->{data}->{children}}) {
+						if (($child->{data}->{domain} !~ /self/i) && ($child->{data}->{url} !~ m@/a/@)) {
+							push @$urls, $child->{data}->{url};
+						}
+					}
+					$self->log_debug(9, "URLs: " . json_compose($urls));
+					$image_url = rand_array($urls);
+					$self->log_debug(9, "Chosen image: $image_url");
+				}
+				
+				if ($image_url) {
+					$image_url =~ s@^(\w+\:\/\/)(imgur.com)/(\w+)$@ $1 . 'i.imgur.com/' . $3 . '.jpg'; @e;
+					print "$image_url\n";
+				}
+				else {
+					print "No images found in subreddit: /r/$value\n";
+				}
+			}; # eval
+			if ($@) { $self->log_debug(1, "CHILD CRASH reddit: $@"); }
+		} # sub
+	);
+}
+sub r { return reddit(@_); }
 
 1;
