@@ -203,7 +203,9 @@ sub _google_image_search {
 		my $link = $1;
 		$link =~ s/(\\u([0-9a-f]{4}))/ chr(hex($2)); /iesg;
 		
-		push @$items, { title => $title, link => $link };
+		if ($link =~ /\.(jpg|jpeg|gif|png)(\?|$)/i) {
+			push @$items, { title => $title, link => $link };
+		}
 	}
 	
 	if (!@$items && ($google =~ /rate exceeded/)) {
