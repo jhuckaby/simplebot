@@ -177,8 +177,14 @@ sub _google_image_search {
 	my ($self, $value) = @_;
 	my $items = [];
 	
+	# safe mode
+	my $safety = 'active';
+	if ($value =~ s/^unsafe\s+(.+)$/$1/i) {
+		$safety = 'off';
+	}
+	
 	my $url = 'http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=' . 
-		uri_escape($value) . '&start=0';
+		uri_escape($value) . '&start=0&safe=' . $safety;
 	
 	$self->log_debug(9, "Fetching Google Image Search URL: $url");
 	my $google = file_get_contents( $url );
