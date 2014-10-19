@@ -16,7 +16,7 @@ use Encode qw(decode encode);
 
 sub init {
 	my $self = shift;
-	$self->register_commands('google', 'define', 'image', 'stock', 'btc', 'bitcoin', 'urban', 'spell', 'reddit', 'r', 'rotten', 'movie', 'synopsis', 'plot', 'cast');
+	$self->register_commands('google', 'define', 'image', 'stock', 'btc', 'bitcoin', 'urban', 'spell', 'reddit', 'r', 'rotten', 'movie', 'synopsis', 'plot', 'cast', 'beer');
 }
 
 sub google {
@@ -597,7 +597,7 @@ sub rotten {
 					print "No movie found for: $value\n";
 				}
 			}; # eval
-			if ($@) { $self->log_debug(1, "CHILD CRASH reddit: $@"); }
+			if ($@) { $self->log_debug(1, "CHILD CRASH rotten: $@"); }
 		} # sub
 	);
 }
@@ -616,6 +616,70 @@ sub cast {
 	my ($self, $value, $args) = @_;
 	$args->{cast} = 1;
 	return $self->rotten( $value, $args );
+}
+
+sub beer {
+	# get beer info from BreweryDB.com (requires free API Key)
+	my ($self, $value, $args) = @_;
+	my $username = $args->{who};
+	
+	return undef unless $value;
+	
+	if (!$self->{config}->{BeerAPIKey}) {
+		return "$username: No API key is set for BreweryDB.com.  Please type: !help beer";
+	}
+	
+	$self->log_debug(9, "Forking for BreweryDB API...");
+	
+	$self->{bot}->forkit(
+		channel => nch( $args->{channel} ),
+		handler => '_fork_utf8_said',
+		run => sub {
+			eval {
+				# http://api.brewerydb.com/v2/search?key=...&type=beer&withBreweries=Y&q=pliny
+				
+				my $url = 'http://api.brewerydb.com/v2/search?key='.$self->{config}->{BeerAPIKey}.'&type=beer&withBreweries=Y&q='.uri_escape($value);
+				$self->log_debug(9, "Fetching BreweryDB URL: $url");
+				
+				my $json_raw = trim(file_get_contents($url));
+				$self->log_debug(9, "Raw result: $json_raw");
+				
+				my $json = eval { json_parse( $json_raw ); };
+				if ($json && $json->{data}) {
+					my $beer = $json->{data}->[0];
+					my $resp = '';
+					
+					$resp .= $beer->{name};
+					if ($beer->{style}->{name}) { $resp .= " (" . $beer->{style}->{name} . ")"; }
+					
+					my $parts = [];
+					if ($beer->{abv}) { push @$parts, 'ABV: ' . $beer->{abv} . '%'; }
+					if ($beer->{ibu}) { push @$parts, 'IBU: ' . $beer->{ibu} . 'ppm'; }
+					
+					if (scalar @$parts) {
+						$resp .= ": " . join(', ', @$parts) . "\n";
+					}
+					
+					if ($beer->{breweries}) {
+						my $brewery = $beer->{breweries}->[0];
+						$resp .= $brewery->{name};
+						if ($brewery->{website}) { $resp .= " - " . $brewery->{website}; }
+						$resp .= "\n";
+					}
+					
+					if ($beer->{description}) {
+						$resp .= $beer->{description} . "\n";
+					}
+					
+					print trim($resp) . "\n";
+				}
+				else {
+					print "No beer found for: $value\n";
+				}
+			}; # eval
+			if ($@) { $self->log_debug(1, "CHILD CRASH beer: $@"); }
+		} # sub
+	);
 }
 
 1;
