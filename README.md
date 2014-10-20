@@ -76,6 +76,7 @@ The bot's Twitter Plugin uses the free Twitter API v1.1.  For this, you will nee
 * ROLL - Roll dice for use in Roll Playing Games, such as Dungeons & Dragons.
 * HASH - Generate MD5 hash of string, or a random source.
 * PICK - Pick a random user from the channel, and notify them.
+* 8BALL - Ask the magic 8-ball a question.
 * TIME - Emits the current date/time in the user's local timezone (if known).
 * ALARM - Sets single or repeating alarms which alert the user at the proper date/time.
 * COUNTDOWN - Countdown to a particular time, date or next calendar event.
@@ -103,10 +104,10 @@ The bot's Twitter Plugin uses the free Twitter API v1.1.  For this, you will nee
 * VOTE - Cast your vote for an open poll.
 * TOPIC - Set the channel topic in special named columns, separated by a divider.
 * TWITTER - Follow people on twitter, or retweet someone's latest tweet.
-* RT - Retweet the last tweet of any Twitter username.
-* FOLLOW - Start following a Twitter username in the current channel.
-* UNFOLLOW - Stop following a Twitter username in the current channel.
-* FOLLOWING - List all users we are current following on Twitter.
+* RT - Retweet the last tweet of any Twitter username or #hashtag.
+* FOLLOW - Start following a Twitter username or #hashtag in the current channel.
+* UNFOLLOW - Stop following a Twitter username or #hashtag in the current channel.
+* FOLLOWING - List all users and/or #hashtags we are current following on Twitter.
 * WEATHER - Get current conditions for US zip code, 'city state' or 'city country'.
 * FORECAST - Set 5 day forecast for US zip code, 'city state' or 'city country'.
 * LOCATION - Set your default location and time zone for future queries.
@@ -116,6 +117,14 @@ The bot's Twitter Plugin uses the free Twitter API v1.1.  For this, you will nee
 * SPELL - Spell check a word (uses DictionaryAPI.com).
 * URBAN - Define term using the Urban Dictionary API.
 * STOCK - Grab stock quote given company symbol (uses Yahoo Finance API).
+* BITCOIN - Lookup the current price of Bitcoin in USD.
+* REDDIT - Emit random image from front page of selected subreddit.
+* ROTTEN - Lookup movie ratings from RottenTomatoes.com.
+* PLOT - Lookup movie plot (synopsis) from RottenTomatoes.com.
+* CAST - Lookup movie cast from RottenTomatoes.com.
+* BEER - Lookup beer information from BreweryDB.com.
+* NEWS - Lookup news for a specific topic, using the Google News API.
+* XKCD - Grab latest comic title and image from xkcd.com.
 
 ## Admin Group
 
@@ -402,14 +411,18 @@ Acceptable values for FeedID are "significant", "4.5", "2.5", "1.0" or "all".
 
 	FAQ command answer
 	FAQ list
-	FAQ delete NUMBER
+	FAQ delete NAME
 
-This registers a custom FAQ command and associates some text with it.  Then, users can recall the FAQ answer by entering the custom command just like any other bot command.  You can also use "!faq list" to get a list of all the FAQ commands for the current channel, and "!faq delete NUMBER" to delete them.  Examples:
+This registers a custom FAQ command and associates some text with it.  Then, users can recall the FAQ answer by entering the custom command just like any other bot command.  You can also use "!faq list" to get a list of all the FAQ commands for the current channel, and "!faq delete NAME" to delete them.  Examples:
 
 	!faq myserver Welcome to my server!  Please read the rules at http://myserver.com/rules/
 	!myserver
 	!faq list
-	!faq delete 1
+	!faq delete myserver
+
+To control which users have access to view FAQs, set the access level for the 'faqview' pseudo-command, like this:
+
+	!access set faqview voice
 
 ## Google Calendar Group
 
@@ -588,20 +601,22 @@ These commands control the channel topic using a set of named "columns" and a di
 ### FOLLOW
 
 	FOLLOW @username
+	FOLLOW #hashtag
 
-Starts following @username's tweets on Twitter, and automatically echos them into the current channel.  Will omit @replies and RTs by the user.  Please note that due to Twitter API throttling, the bot can only check one per user's timeline once per minute, so if the bot is following 2 people, it may take up to 2 minutes to see new tweets from either of them.
+Starts following @username's tweets (or tweets for a #hashtag) on Twitter, and automatically echos them into the current channel.  Will omit @replies and RTs by the user.  Please note that due to Twitter API throttling, the bot can only check one per user's timeline once per minute, so if the bot is following 2 people, it may take up to 2 minutes to see new tweets from either of them.
 
 ### FOLLOWING
 
 	FOLLOWING
 
-List all users we are currently following on Twitter, and in which channels.
+List all users and/or hashtags we are currently following on Twitter, and in which channels.
 
 ### RT
 
 	RT @username
+	RT #hashtag
 
-Retweet the last tweet of the specified Twitter username.  Will omit @replies and RTs by the user.
+Retweet the last tweet of the specified Twitter username or #hashtag.  Will omit @replies and RTs by the user.
 
 ### TWITTER
 
@@ -627,8 +642,9 @@ At this point the Twitter Plugin should be ready to use, and the API keys will b
 ### UNFOLLOW
 
 	UNFOLLOW @username
+	UNFOLLOW #hashtag
 
-Stop following @username's tweets in the current channel.
+Stop following @username's tweets (or all tweets from a #hashtag) in the current channel.
 
 ## Weather Group
 
@@ -662,6 +678,19 @@ At this point the Weather Plugin should be ready to use.  Test it out by checkin
 
 ## Web Search Group
 
+### BEER
+
+	BEER name
+Use this command to lookup beer information from BreweryDB.com.  Please note that this API requires a free API key.  Sign up at http://www.brewerydb.com/developers/ and then configure your API key with this command: 
+
+	!config set WebSearch/BeerAPIKey YOUR_API_KEY_HERE
+
+### BITCOIN
+
+	BITCOIN
+	BTC
+Lookup the current price of Bitcoin in US dollars.  This uses a free API from BitStamp.net.
+
 ### DEFINE
 
 	DEFINE term
@@ -681,7 +710,31 @@ This uses the Google Search API to search for a query, and returns the first res
 
 	IMAGE search-query
 	IMAGE nickname
-This uses the Google Image Search API to search for an image given a text string, and returns a direct URL to the first result.  If a username is specified, the last thing the user said is used as the query.  The result is emitted to the current channel.  If you repeat the same query multiple times, it will cycle through the first 4 results.
+This uses the Google Image Search API to search for an image given a text string, and returns a direct URL to the first result.  If a username is specified, the last thing the user said is used as the query.  The result is emitted to the current channel.  If you repeat the same query multiple times, it will cycle through the first 4 results.  Note that Google SafeSearch is used by default.  If you want an unsafe image search, use this syntax: '!image unsafe YOUR_QUERY'.
+
+### NEWS
+
+	NEWS topic
+Lookup news for a particlar topic, using the free Google News API.  The article source, title, link, and summary are emitted to the channel.
+
+### REDDIT
+
+	REDDIT subreddit
+R subreddit
+Pick a random image from the front page of the specified subreddit, and output the image URL.  Examples:
+
+	!reddit earthporn
+	!r aww
+
+### ROTTEN
+
+	ROTTEN movie
+	MOVIE movie
+	PLOT movie
+	CAST movie
+Use these commands to lookup movie ratings, synopsis and cast using the RottenTomatoes.com API.  Please note that this API requires a free API key.  Sign up at http://developer.rottentomatoes.com/ and then configure your API key with this command: 
+
+	!config set WebSearch/RottenAPIKey YOUR_API_KEY_HERE
 
 ### SPELL
 
@@ -699,6 +752,11 @@ This uses the Yahoo Finance API to grab a stock quote for the given symbol.  It 
 
 	URBAN term
 This uses the Urban Dictionary API to locate a suitable definition for a term.  The result is emitted to the current channel.  Beware: Urban Dictionary can be very NSFW.  Use this at your own risk.  Remember, you can restrict access for any command to be owner only: !access set urban owner
+
+### XKCD
+
+	XKCD
+This grabs the latest comic title and image from xkcd.com.
 
 ## Copyright and Legal
 
