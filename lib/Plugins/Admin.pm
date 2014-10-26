@@ -543,6 +543,11 @@ sub upgrade {
 	my $version = $self->{bot}->{version};
 	if ($branch !~ /\S/) { $branch = $version->{Branch}; }
 	
+	# make sure we're not running in debug mode
+	if ($self->{params}->{debug}) {
+		return "ERROR: Bot is running in debug mode.  Please restart in standard mode before attempting a self-upgrade.";
+	}
+	
 	my $resp = wget('http://pixlcore.com/software/simplebot/version-'.$branch.'.json', 5);
 	if (!$resp->is_success()) {
 		return "Unable to determine latest $branch version on PixlCore.com: " . $resp->status_line();
