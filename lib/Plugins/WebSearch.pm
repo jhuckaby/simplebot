@@ -488,7 +488,7 @@ sub urban {
 					# filter bad words if desired
 					if ($self->{config}->{UrbanBadWordFilter}) {
 						my $regexp = $self->{bot}->{bad_word_match};
-						$response =~ s@$regexp@****@g;
+						$response =~ s@$regexp@****@ig;
 					}
 					
 					# squeeze URL onto end
