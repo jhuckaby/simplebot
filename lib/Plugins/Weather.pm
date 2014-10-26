@@ -63,6 +63,7 @@ sub weather {
 		run => sub {
 			eval {
 				my $response = '';
+				my $metric = ($self->{config}->{Units} =~ /metric/i) ? 1 : 0;
 				
 				# resolve 'city state' or 'city country' to 'state_or_country/city_with_underscores'
 				if ($value =~ s/\,?\s+(\S+)$//) {
@@ -90,7 +91,7 @@ sub weather {
 								my $days = $forecast->{forecast}->{txt_forecast}->{forecastday};
 								foreach my $day (@$days) {
 									if ($day->{title} !~ /night/i) {
-										$response .= $day->{title} . ": " . $day->{fcttext} . "\n";
+										$response .= $day->{title} . ": " . ($metric ? $day->{fcttext_metric} : $day->{fcttext}) . "\n";
 									}
 								}
 							} # good json
@@ -100,10 +101,56 @@ sub weather {
 						my $data = $weather->{current_observation};
 						
 						$response = "Current conditions for " . $data->{display_location}->{full} . ": ";
-						$response .= $data->{weather} . ", " . $data->{temperature_string};
-						$response .= ", Wind: " . $data->{wind_string};
+						$response .= $data->{weather};
+						
+						# $response .= ", " . $data->{temperature_string};
+						if ($metric) { 
+							# metric temp in C
+							$response .= ", " . $data->{temp_c} . " C"; 
+						}
+						else { 
+							# imperial temp in F
+							$response .= ", " . $data->{temp_f} . " F"; 
+						}
+						
+						# $response .= ", Wind: " . $data->{wind_string};
+						if ($data->{wind_mph} > 0) {
+							$response .= ", Wind: From the " . $data->{wind_dir} . " at ";
+							if ($metric) {
+								# metric wind in kph
+								$response .= $data->{wind_kph} . " KPH Gusting to " . $data->{wind_gust_kph} . " KPH";
+							}
+							else {
+								# imperial wind in mph
+								$response .= $data->{wind_mph} . " MPH Gusting to " . $data->{wind_gust_mph} . " MPH";
+							}
+						}
+						else {
+							$response .= ", Wind: Calm";
+						} 
+						
 						$response .= ", Humidity: " . $data->{relative_humidity};
-						$response .= ", Pressure: " . $data->{pressure_in} . " in\n";
+						
+						# $response .= ", Pressure: " . $data->{pressure_in} . " in";
+						$response .= ", Pressure: ";
+						if ($metric) {
+							# metric pressure in kPa
+							my $kPa = $data->{pressure_mb} / 10;
+							$response .= "$kPa kPa";
+						}
+						else {
+							# imperial presusre in inches
+							$response .= $data->{pressure_in} . " in";
+						}
+						if ($data->{pressure_trend} =~ /\+/) { $response .= " (Trending up)"; }
+						elsif ($data->{pressure_trend} =~ /\-/) { $response .= " (Trending down)"; }
+						
+						$response .= ", Visibility: ";
+						if ($metric) { $response .= $data->{visibility_km} . " KPH"; }
+						else { $response .= $data->{visibility_mi} . " MPH"; }
+						
+						$response .= ", UV Index: " . $data->{UV} . "/12";
+						
 					} # conditions
 					
 					if ($response) {

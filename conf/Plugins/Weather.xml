@@ -5,6 +5,9 @@
 	<!-- API Key for WeatherUnderground.com -->
 	<APIKey></APIKey>
 	
+	<!-- Units of measurement: "imperial" (US) or "metric" (everywhere else) -->
+	<Units>imperial</Units>
+	
 	<Access>
 		<Default>voice</Default>
 	</Access>
