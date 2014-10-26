@@ -147,8 +147,8 @@ sub weather {
 						elsif ($data->{pressure_trend} =~ /\-/) { $response .= " (Trending down)"; }
 						
 						$response .= ", Visibility: ";
-						if ($metric) { $response .= $data->{visibility_km} . " KPH"; }
-						else { $response .= $data->{visibility_mi} . " MPH"; }
+						if ($metric) { $response .= $data->{visibility_km} . " KM"; }
+						else { $response .= $data->{visibility_mi} . " MI"; }
 						
 						$response .= ", UV Index: " . $data->{UV} . "/12";
 						
