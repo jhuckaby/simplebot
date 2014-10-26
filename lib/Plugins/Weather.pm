@@ -114,8 +114,9 @@ sub weather {
 						}
 						
 						# $response .= ", Wind: " . $data->{wind_string};
-						if ($data->{wind_mph} > 0) {
-							$response .= ", Wind: From the " . $data->{wind_dir} . " at ";
+						$response .= ", Wind: ";
+						if ($data->{wind_mph} >= 1.0) {
+							$response .= "From the " . $data->{wind_dir} . " at ";
 							if ($metric) {
 								# metric wind in kph
 								$response .= $data->{wind_kph} . " KPH Gusting to " . $data->{wind_gust_kph} . " KPH";
@@ -126,7 +127,7 @@ sub weather {
 							}
 						}
 						else {
-							$response .= ", Wind: Calm";
+							$response .= "Calm";
 						} 
 						
 						$response .= ", Humidity: " . $data->{relative_humidity};
