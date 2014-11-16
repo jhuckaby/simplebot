@@ -62,6 +62,8 @@ sub quakes {
 	else {
 		# emit most recent quake, even if repeat
 		my $quakes = $self->get_quakes('day');
+		if (!$quakes) { return "Failed to fetch quake information from USGS."; }
+		
 		if (@$quakes) {
 			my $quake = $quakes->[0];
 			my $props = $quake->{properties};
@@ -92,6 +94,12 @@ sub tick {
 			run => sub {
 				eval {
 					my $quakes = $self->get_quakes();
+					if (!$quakes) {
+						$self->log_debug(9, "Failed to fetch quakes from USGS, aborting tick");
+						print "\n"; # child forks always need to print something
+						return;
+					}
+					
 					my $add_ids = {};
 					my $remove_ids = {};
 					my $num_actions = 0;
@@ -158,6 +166,7 @@ sub prime_quakes {
 	$self->{data}->{quakes} ||= {};
 	
 	my $quakes = $self->get_quakes();
+	if (!$quakes) { return; }
 	
 	foreach my $quake (@$quakes) {
 		$self->{data}->{quakes}->{ $quake->{id} } = 1;
@@ -181,9 +190,18 @@ sub get_quakes {
 		$self->log_debug(9, "Fetching USGS earthquake data: $url");
 		
 		my $json_raw = trim(file_get_contents($url));
+		if (!$json_raw) {
+			$self->log_debug(9, "Failed to fetch: $url");
+			return undef;
+		}
 		$self->log_debug(9, "Raw result: $json_raw");
 		
 		my $json = eval { json_parse( $json_raw ); };
+		if (!$json) {
+			$self->log_debug(9, "Failed to parse JSON: $url: $@");
+			return undef;
+		}
+		
 		if ($json && $json->{features} && $json->{features}->[0]) {
 			foreach my $event (@{$json->{features}}) {
 				if ($event->{properties} && $event->{properties}->{type} && ($event->{properties}->{type} eq 'earthquake')) {
