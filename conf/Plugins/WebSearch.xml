@@ -2,6 +2,10 @@
 <PluginConfig>
 	<Version>1.0</Version>
 	
+	<!-- API Key and App ID for Google Image Search -->
+	<GoogleAPIKey></GoogleAPIKey>
+	<GoogleAppID></GoogleAppID>
+	
 	<!-- API Key for dictionaryapi.com -->
 	<DictAPIKey></DictAPIKey>
 	
@@ -45,6 +49,11 @@ This uses the Google Search API to search for a query, and returns the first res
 IMAGE search-query
 IMAGE nickname
 This uses the Google Image Search API to search for an image given a text string, and returns a direct URL to the first result.  If a username is specified, the last thing the user said is used as the query.  The result is emitted to the current channel.  If you repeat the same query multiple times, it will cycle through the first 4 results.  Note that Google SafeSearch is used by default.  If you want an unsafe image search, use this syntax: '!image unsafe YOUR_QUERY'.
+-
+Please note that this API requires a free API key, and an App ID.  Sign up at https://cse.google.com/cse/all and then configure your API key and App ID with these commands: 
+-
+!config set WebSearch/GoogleAPIKey YOUR_API_KEY_HERE
+!config set WebSearch/GoogleAppID YOUR_APP_ID_HERE
 			</image>
 			<define>
 DEFINE term

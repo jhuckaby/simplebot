@@ -71,6 +71,13 @@ sub image {
 	my $username = $args->{who};
 	my $users = $self->{bot}->{_eb_temp}->{channels}->{sch($args->{channel})}->{users} || {};
 	
+	if (!$self->{config}->{GoogleAPIKey}) {
+		return "$username: You must set the WebSearch/GoogleAPIKey configuration parameter before using Google Image Search.";
+	}
+	if (!$self->{config}->{GoogleAppID}) {
+		return "$username: You must set the WebSearch/GoogleAppID configuration parameter before using Google Image Search.";
+	}
+	
 	if ($users->{lc($value)} && $users->{lc($value)}->{last_said}) {
 		# user wants to translate the last thing said by the given user
 		my $target_nick = $value;
@@ -178,37 +185,31 @@ sub _google_image_search {
 	my $items = [];
 	
 	# safe mode
-	my $safety = 'active';
+	my $safety = 'high';
 	if ($value =~ s/^unsafe\s+(.+)$/$1/i) {
 		$safety = 'off';
 	}
 	
-	my $url = 'http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=' . 
-		uri_escape($value) . '&start=0&safe=' . $safety;
+	my $url = 'https://www.googleapis.com/customsearch/v1?key=' . $self->{config}->{GoogleAPIKey} . '&cx=' . $self->{config}->{GoogleAppID} . '&safe=' . $safety . '&num=5&searchType=image&imgType=photo&q=' . uri_escape($value);
 	
 	$self->log_debug(9, "Fetching Google Image Search URL: $url");
 	my $google = file_get_contents( $url );
 	
 	$self->log_debug(9, "Raw Google Image Response: $google");
 	
-	my $items = [];
-	while ($google =~ s@\"titleNoFormatting\"\:"([^\"]+)\"@@) {
-		my $title = $1;
-		$title =~ s/(\\u([0-9a-f]{4}))/ chr(hex($2)); /iesg;
-		$title =~ s/\\x(\w{2})/\%$1/g;
-		$title = uri_unescape( $title );
-		$title = decode_entities( $title );
-		
-		if (!($google =~ s@\"unescapedUrl\"\:\"([^\"]+)\"@@)) { last; }
-		my $link = $1;
-		$link =~ s/(\\u([0-9a-f]{4}))/ chr(hex($2)); /iesg;
-		
-		if ($link =~ /\.(jpg|jpeg|gif|png)(\?|$)/i) {
-			push @$items, { title => $title, link => $link };
+	my $json = json_parse( $google ) || {};
+	
+	if ($json->{items}) {
+		foreach my $item (@{$json->{items}}) {
+			my $title = $item->{title} || '';
+			my $link = $item->{link} || '';
+			if ($link =~ /\.(jpg|jpeg|gif|png)(\?|$)/i) {
+				push @$items, { title => $title, link => $link };
+			}
 		}
 	}
-	
-	if (!@$items && ($google =~ /rate exceeded/)) {
+	elsif ($json->{error}) {
+		$self->log_debug(4, "Google Image API Error: " . $json->{error}->{code} . ": " . $json->{error}->{message});
 		return undef;
 	}
 	
