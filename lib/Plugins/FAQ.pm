@@ -44,6 +44,24 @@ sub faq {
 		return "FAQ commands set for $chan: " . join(', ', sort keys %$faqs);
 	}
 	
+	elsif ($msg =~ /^search\s+(.+)$/i) {
+		# search faq keys
+		my $keyword = trim($1);
+		$self->{data}->{channels} ||= {};
+		my $faqs = $self->{data}->{channels}->{ sch($chan) } ||= {};
+		my $results = [];
+		foreach my $key (sort keys %$faqs) {
+			if ($key =~ m@$keyword@i) { push @$results, $key; }
+		}
+		
+		if (scalar @$results) {
+			return "FAQ Commands matching $keyword: " . join(', ', @$results);
+		}
+		else {
+			return "No FAQ commands found matching: $keyword";
+		}
+	}
+	
 	elsif ($msg =~ /^(delete|del|remove|rem)\s+(.+)$/i) {
 		# delete faq
 		my $which = lc($2);
